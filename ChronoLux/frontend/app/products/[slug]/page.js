@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { productsAPI, cartAPI, wishlistAPI, reviewsAPI } from '@/lib/api';
+import api from '@/lib/api';
 import { useAuthStore, useCartStore, useWishlistStore } from '@/lib/store';
 import { Star, Plus, Minus, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw } from 'lucide-react';
 
@@ -12,7 +13,6 @@ export default function ProductDetailPage() {
   const { isAuthenticated } = useAuthStore();
   const { setCartCount } = useCartStore();
   const { setWishlistCount } = useWishlistStore();
-
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -66,11 +66,8 @@ export default function ProductDetailPage() {
 
     setAddingToCart(true);
     try {
-      await cartAPI.addToCart({
-        productId: product._id,
-        quantity,
-      });
-
+      console.log('Adding to cart:', { productId: product._id, quantity });
+      await api.post('/cart/items',{ productId: product._id, quantity })
       // Update cart count
       const cartResponse = await cartAPI.getCart();
       setCartCount(cartResponse.data.items?.length || 0);
@@ -390,7 +387,7 @@ export default function ProductDetailPage() {
                     <img
                       src={relatedProduct.images[0]}
                       alt={relatedProduct.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">

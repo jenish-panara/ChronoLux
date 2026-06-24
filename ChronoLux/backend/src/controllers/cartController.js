@@ -46,10 +46,10 @@ exports.addToCart = async (req, res, next) => {
       });
     }
 
-    let cart = await Cart.findOne({ user: req.user.id });
+    let cart = await Cart.findOne({ user: req.user?.id });
 
     if (!cart) {
-      cart = await Cart.create({ user: req.user.id, items: [] });
+      cart = await Cart.create({ user: req.user?.id, items: [] });
     }
 
     // Check if item already exists in cart
@@ -93,7 +93,7 @@ exports.updateCartItem = async (req, res, next) => {
   try {
     const { quantity } = req.body;
 
-    const cart = await Cart.findOne({ user: req.user.id });
+    const cart = await Cart.findOne({ user: req.user?.id });
     if (!cart) {
       return res.status(404).json({
         success: false,
@@ -137,7 +137,7 @@ exports.updateCartItem = async (req, res, next) => {
 // @access  Private
 exports.removeFromCart = async (req, res, next) => {
   try {
-    const cart = await Cart.findOne({ user: req.user.id });
+    const cart = await Cart.findOne({ user: req.user?.id });
     if (!cart) {
       return res.status(404).json({
         success: false,
@@ -165,7 +165,7 @@ exports.removeFromCart = async (req, res, next) => {
 // @access  Private
 exports.clearCart = async (req, res, next) => {
   try {
-    const cart = await Cart.findOne({ user: req.user.id });
+    const cart = await Cart.findOne({ user: req.user?.id });
     if (!cart) {
       return res.status(404).json({
         success: false,
@@ -210,7 +210,7 @@ exports.applyCoupon = async (req, res, next) => {
       });
     }
 
-    const cart = await Cart.findOne({ user: req.user.id });
+    const cart = await Cart.findOne({ user: req.user?.id });
     if (!cart) {
       return res.status(404).json({
         success: false,
@@ -257,7 +257,7 @@ exports.applyCoupon = async (req, res, next) => {
 // @access  Private
 exports.removeCoupon = async (req, res, next) => {
   try {
-    const cart = await Cart.findOne({ user: req.user.id });
+    const cart = await Cart.findOne({ user: req.user?.id });
     if (!cart) {
       return res.status(404).json({
         success: false,

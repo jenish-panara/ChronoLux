@@ -57,6 +57,7 @@ exports.createOrder = async (req, res, next) => {
 
     await sendOrderConfirmationEmail(
       req.user.email,
+      req.user.name,
       order
     );
 

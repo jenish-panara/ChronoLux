@@ -9,13 +9,14 @@ const transporter = nodemailer.createTransport({
 
 module.exports =  sendOrderConfirmationEmail = async (
   customerEmail,
+  customerName,
   order
 ) => {
   const html = `
     <div style="font-family: Arial, sans-serif;">
       <h2>Thank You For Your Order 🎉</h2>
 
-      <p>Hello ${order.name},</p>
+      <p>Hello ${customerName},</p>
 
       <p>Your order has been placed successfully.</p>
 

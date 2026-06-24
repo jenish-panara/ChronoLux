@@ -270,26 +270,37 @@ const testUser = {
 // Seed database
 const seedDatabase = async () => {
   try {
-    // Connect to database
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('MongoDB Connected');
+    // Connect to database with better error handling
+    console.log('Attempting to connect to MongoDB...');
+    console.log('MongoDB URI:', process.env.MONGODB_URI ? 'Set' : 'Not set');
+
+    await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+    });
+    console.log('✅ MongoDB Connected Successfully!');
+    console.log('Connected to:', mongoose.connection.host);
+    console.log('Database:', mongoose.connection.name);
 
     // Clear existing data
+    console.log('Clearing existing data...');
     await User.deleteMany({});
     await Product.deleteMany({});
     await Category.deleteMany({});
     await Coupon.deleteMany({});
-    console.log('Existing data cleared');
+    console.log('✅ Existing data cleared');
 
     // Create categories
+    console.log('Creating categories...');
     const createdCategories = await Category.create(categories);
-    console.log('Categories created');
+    console.log('✅ Categories created');
 
     // Create products with category references
     const luxuryCategory = createdCategories.find((c) => c.slug === 'luxury-watches');
     const sportsCategory = createdCategories.find((c) => c.slug === 'sports-watches');
     const smartCategory = createdCategories.find((c) => c.slug === 'smart-watches');
 
+    console.log('Creating products...');
     const productsWithCategories = products.map((product) => {
       if (product.brand === 'Rolex' || product.brand === 'Omega' || product.brand === 'Tag Heuer' || product.brand === 'Seiko') {
         return { ...product, category: luxuryCategory._id };
@@ -301,21 +312,34 @@ const seedDatabase = async () => {
     });
 
     await Product.create(productsWithCategories);
-    console.log('Products created');
+    console.log('✅ Products created');
 
     // Create users
+    console.log('Creating users...');
     await User.create(adminUser);
     await User.create(testUser);
-    console.log('Users created');
+    console.log('✅ Users created');
 
     // Create coupons
+    console.log('Creating coupons...');
     await Coupon.create(coupons);
-    console.log('Coupons created');
+    console.log('✅ Coupons created');
 
-    console.log('Database seeded successfully!');
+    console.log('🎉 Database seeded successfully!');
     process.exit(0);
   } catch (error) {
-    console.error('Error seeding database:', error);
+    console.error('❌ Error seeding database:', error.message);
+    console.error('Full error:', error);
+
+    // Provide helpful debugging info
+    console.log('\n🔍 Troubleshooting tips:');
+    console.log('1. Check if your IP is whitelisted in MongoDB Atlas (Security → Network Access)');
+    console.log('2. Verify your connection string format in .env file');
+    console.log('3. Check if MongoDB Atlas cluster is running');
+    console.log('4. Ensure your username/password are correct');
+    console.log('5. Check your internet connection');
+    console.log('6. Try running: node test-db-connection.js');
+
     process.exit(1);
   }
 };
