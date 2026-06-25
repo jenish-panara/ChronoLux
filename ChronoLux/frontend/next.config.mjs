@@ -5,7 +5,7 @@ const nextConfig = {
       {
         source: '/api/:path*',
         destination:
-          'http://localhost:5000/api/:path*',
+          'https://chronolux-ytwp.onrender.com/api/:path*',
       },
     ];
   },
