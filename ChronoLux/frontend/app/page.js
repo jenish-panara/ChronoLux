@@ -69,8 +69,6 @@ export default function Home() {
   const currentHero = heroSlides[currentSlide];
 
   const goToSlide = (index) => setCurrentSlide(index);
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
 
   const ProductCard = ({ product }) => (
     <Link href={`/products/${product.slug}`} className="group">
@@ -157,23 +155,6 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-
-            <button
-              type="button"
-              onClick={prevSlide}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full backdrop-blur-md transition"
-              aria-label="Previous slide"
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              onClick={nextSlide}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full backdrop-blur-md transition"
-              aria-label="Next slide"
-            >
-              →
-            </button>
 
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
               {heroSlides.map((slide, index) => (
