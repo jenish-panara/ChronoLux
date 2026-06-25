@@ -3,7 +3,10 @@
 import { useState, useEffect, useRef, Suspense} from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
-import { productsAPI, categoriesAPI } from '@/lib/api';
+import { productsAPI, categoriesAPI ,cartAPI } from '@/lib/api';
+import {ShoppingCart } from 'lucide-react';
+import api from '@/lib/api';
+import { useAuthStore, useCartStore } from '@/lib/store';
 import { Filter, Search } from 'lucide-react';
 import "./product.css";
 
@@ -27,6 +30,8 @@ function ProductsPageContent() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+   const { isAuthenticated } = useAuthStore();
+  const { setCartCount } = useCartStore();
   const [searchInput, setSearchInput] = useState(searchParams.get('search') || '');
   const [filters, setFilters] = useState({
     category: searchParams.get('category') || '',
@@ -52,6 +57,11 @@ function ProductsPageContent() {
       console.error('Error fetching categories:', err);
     }
   };
+
+
+ 
+
+  
 
   useEffect(() => {
     fetchCategories();
@@ -381,9 +391,14 @@ function ProductsPageContent() {
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
-                  <ProductCard key={product._id} product={product} />
-                ))}
+                      {products.map((product) => (
+                        <ProductCard
+                          key={product._id}
+                          product={product}
+                          isAuthenticated={isAuthenticated}
+                          setCartCount={setCartCount}
+                        />
+                      ))}
               </div>
 
               {/* Pagination */}
@@ -416,11 +431,41 @@ function ProductsPageContent() {
   );
 }
 
-function ProductCard({ product }) {
+function ProductCard({ product, isAuthenticated, setCartCount }) {  
   const [isHovered, setIsHovered] = useState(false);
 
+  const [addingToCart, setAddingToCart] = useState(false);
+
+  const handleAddToCart = async () => {
+  if (!isAuthenticated) {
+    window.location.href = '/login';
+    return;
+  }
+
+  if (product.stock < 1) {
+    alert('Out of stock');
+    return;
+  }
+
+  setAddingToCart(true);
+
+  try {
+    await api.post('/cart/items', {
+      productId: product._id,
+      quantity: 1,
+    });
+    const cartResponse = await cartAPI.getCart();
+    setCartCount(cartResponse.data.items?.length || 0);
+    alert('Added to cart successfully!');
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    alert('Failed to add to cart');
+  } finally {
+    setAddingToCart(false);
+  }
+};
   return (
-    <div
+    <div  
       className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -477,11 +522,29 @@ function ProductCard({ product }) {
               <>
                 <span className="text-lg font-bold">₹{product.finalPrice.toLocaleString()}</span>
                 <span className="text-sm text-gray-400 line-through ml-2">₹{product.price.toLocaleString()}</span>
+                
               </>
             ) : (
               <span className="text-lg font-bold">₹{product.finalPrice.toLocaleString()}</span>
             )}
           </div>
+          <button
+            onClick={handleAddToCart}
+            disabled={product.stock === 0 || addingToCart}
+            className="
+      flex items-center gap-2
+      px-3 py-2
+      bg-black text-white
+      rounded-md
+      hover:bg-gray-800
+      disabled:bg-gray-400
+      disabled:cursor-not-allowed
+      transition
+    "
+          >
+            <ShoppingCart className="w-4 h-4" />
+            {addingToCart ? 'Adding...' : 'Add'}
+          </button>
         </div>
       </div>
     </div>

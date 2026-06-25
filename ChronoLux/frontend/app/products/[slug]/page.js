@@ -200,6 +200,7 @@ export default function ProductDetailPage() {
                 <span className="text-3xl font-bold">₹{product.finalPrice.toLocaleString()}</span>
                 <span className="text-xl text-gray-400 line-through">₹{product.price.toLocaleString()}</span>
                 <span className="text-red-600 font-semibold">Save {product.discount}%</span>
+                
               </div>
             ) : (
               <span className="text-3xl font-bold">₹{product.finalPrice.toLocaleString()}</span>

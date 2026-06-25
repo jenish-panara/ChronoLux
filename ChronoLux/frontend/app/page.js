@@ -2,10 +2,14 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { productsAPI } from '@/lib/api';
-import { ArrowRight, Star } from 'lucide-react';
+import { productsAPI ,cartAPI } from '@/lib/api';
+import api from '@/lib/api';
+import { useAuthStore, useCartStore } from '@/lib/store';
+import { ArrowRight, Star, ShoppingCart } from 'lucide-react';
 
 export default function Home() {
+  const { isAuthenticated } = useAuthStore();
+  const { setCartCount } = useCartStore();
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
   const [bestSellers, setBestSellers] = useState([]);
@@ -70,50 +74,119 @@ export default function Home() {
 
   const goToSlide = (index) => setCurrentSlide(index);
 
-  const ProductCard = ({ product }) => (
+  const ProductCard = ({ product, isAuthenticated, setCartCount }) => {
+  const [addingToCart, setAddingToCart] = useState(false);
+
+  const handleAddToCart = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      window.location.href = '/login';
+      return;
+    }
+
+    if (product.stock < 1) {
+      alert('Out of stock');
+      return;
+    }
+
+    setAddingToCart(true);
+
+    try {
+      await api.post('/cart/items', {
+        productId: product._id,
+        quantity: 1,
+      });
+
+      const cartResponse = await cartAPI.getCart();
+
+      setCartCount(cartResponse.data.items?.length || 0);
+
+      alert('Added to cart successfully!');
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('Failed to add to cart');
+    } finally {
+      setAddingToCart(false);
+    }
+  };
+
+  return (
     <Link href={`/products/${product.slug}`} className="group">
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">        <div className="relative h-64 bg-white">
-        {product.images && product.images[0] ? (
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
-            No Image
-          </div>
-        )}
-        {product.discount > 0 && (
-          <span className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold">
-            {product.discount}% OFF
-          </span>
-        )}
-      </div>
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+
+        <div className="relative h-64 bg-white">
+          {product.images && product.images[0] ? (
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-400">
+              No Image
+            </div>
+          )}
+
+          {product.discount > 0 && (
+            <span className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold">
+              {product.discount}% OFF
+            </span>
+          )}
+        </div>
+
         <div className="p-4">
-          <h3 className="font-semibold text-lg mb-1 line-clamp-1">{product.name}</h3>
-          <p className="text-gray-600 text-sm mb-2">{product.brand}</p>
+          <h3 className="font-semibold text-lg mb-1 line-clamp-1">
+            {product.name}
+          </h3>
+
+          <p className="text-gray-600 text-sm mb-2">
+            {product.brand}
+          </p>
+
           <div className="flex items-center mb-2">
             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-sm ml-1">{product.rating || 0}</span>
-            <span className="text-gray-400 text-sm ml-1">({product.numReviews || 0})</span>
+            <span className="text-sm ml-1">
+              {product.rating || 0}
+            </span>
+            <span className="text-gray-400 text-sm ml-1">
+              ({product.numReviews || 0})
+            </span>
           </div>
+
           <div className="flex items-center justify-between">
             <div>
               {product.discount > 0 ? (
                 <>
-                  <span className="text-lg font-bold">₹{product.finalPrice.toLocaleString()}</span>
-                  <span className="text-sm text-gray-400 line-through ml-2">₹{product.price.toLocaleString()}</span>
+                  <span className="text-lg font-bold">
+                    ₹{product.finalPrice.toLocaleString()}
+                  </span>
+                  <span className="text-sm text-gray-400 line-through ml-2">
+                    ₹{product.price.toLocaleString()}
+                  </span>
                 </>
               ) : (
-                <span className="text-lg font-bold">₹{product.finalPrice.toLocaleString()}</span>
+                <span className="text-lg font-bold">
+                  ₹{product.finalPrice.toLocaleString()}
+                </span>
               )}
             </div>
+
+            <button
+              onClick={handleAddToCart}
+              disabled={addingToCart || product.stock === 0}
+              className="flex items-center gap-2 px-3 py-2 bg-black text-white rounded-md hover:bg-gray-800 disabled:bg-gray-400"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              {addingToCart ? 'Adding...' : 'Add'}
+            </button>
           </div>
         </div>
       </div>
     </Link>
   );
+};
 
   return (
     <div>
@@ -186,8 +259,12 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {newArrivals.map((product) => (
-                <ProductCard key={product._id} product={product} />
-              ))}
+                <ProductCard
+                  key={product._id}
+                  product={product}
+                  isAuthenticated={isAuthenticated}
+                  setCartCount={setCartCount}
+                />              ))}
             </div>
           )}
         </div>
@@ -207,8 +284,12 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {bestSellers.map((product) => (
-                <ProductCard key={product._id} product={product} />
-              ))}
+                <ProductCard
+                  key={product._id}
+                  product={product}
+                  isAuthenticated={isAuthenticated}
+                  setCartCount={setCartCount}
+                />              ))}
             </div>
           )}
         </div>
