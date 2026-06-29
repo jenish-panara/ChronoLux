@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const LOCAL_MONGO_URI = 'mongodb+srv://jenishpanara1492005_db_user:Zzct8t2tPJaMiqGj@cluster0.mq9zwlm.mongodb.net/chronolux';
+const LOCAL_MONGO_URI =process.env.MONGODB_URI;
 
 const connectWithFallback = async (uri) => {
   try {
