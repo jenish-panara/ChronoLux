@@ -2,6 +2,7 @@
 node_modules/
 backend/node_modules/
 README.md
+ChronoLux/CHRONOLUX_COMPREHENSIVE_REVIEW.md
 # Environment variables
 .env
 backend/.env

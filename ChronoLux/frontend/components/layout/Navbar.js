@@ -35,8 +35,13 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-black">ChronoLux</span>
+            <img
+              src="/images/logo.png"
+              alt="ChronoLux Logo"
+              className="h-8 w-auto object-contain"
+            />
           </Link>
+
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-15">
