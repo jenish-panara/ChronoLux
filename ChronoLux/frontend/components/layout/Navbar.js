@@ -37,7 +37,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center">
             <div className="bg-white rounded-xl border border-gray-300 px-4 py-2 shadow-sm hover:shadow-lg transition-all duration-300">
               <img
-                src="/images/logo.png"
+                src="https://chatgpt.com/backend-api/estuary/content?id=file_000000009be071fabe6b24d4a3931bd2&ts=495203&p=fs&cid=1&sig=a0d4dca2087dd0b40f1b17646c5126162c8b646d7f91e27dcb18995a09ff9fda&v=0"
                 alt="ChronoLux Logo"
                 className="h-9 w-auto object-contain"
               />
