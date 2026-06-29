@@ -35,11 +35,11 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <div className="bg-white rounded-xl border border-gray-300 px-4 py-2 shadow-sm hover:shadow-lg transition-all duration-300">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-lg px-6 py-3 transition duration-300 hover:scale-105">
               <img
                 src="/images/Logo1.png"
                 alt="ChronoLux Logo"
-                className="h-9 w-auto object-contain"
+                className="h-16 w-auto object-contain"
               />
             </div>
           </Link>
