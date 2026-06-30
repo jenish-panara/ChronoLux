@@ -184,40 +184,46 @@ function ProductsPageContent() {
   const brands = ['Rolex', 'Titan', 'Casio', 'Fossil', 'Seiko', 'Omega', 'Tag Heuer'];
 
   return (
-    <div className="max-w-7xl mx-auto px-0 py-8">
-      <div className="flex flex-col lg:flex-row gap-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      {/* Mobile Filter Toggle */}
+      <button
+        onClick={() => setShowMobileFilters(!showMobileFilters)}
+        className="lg:hidden w-full mb-4 flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm"
+      >
+        <span className="flex items-center font-medium">
+          <Filter className="w-5 h-5 mr-2" />
+          Filters
+        </span>
+        <span className="text-gray-500">
+          {showMobileFilters ? '▲' : '▼'}
+        </span>
+      </button>
+
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
         {/* Filters Sidebar */}
-        <div className="filter-sidebar">
-          <div className="filter-card">
-            <div className="filter-header">
-              <h2 className="filter-title">
-                <Filter className="w-5 h-5 mr-2" />
+        <div className={`${showMobileFilters ? 'block' : 'hidden'} lg:block w-full lg:w-64 xl:w-72 flex-shrink-0`}>
+          <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-6 shadow-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-base sm:text-lg font-bold flex items-center">
+                <Filter className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 Filters
               </h2>
               <button
                 onClick={clearFilters}
-                className="clear-filter-btn"
+                className="text-red-500 hover:text-red-700 text-xs sm:text-sm font-medium"
               >
                 Clear All
               </button>
             </div>
 
-            {/* Mobile Filter Toggle */}
-            <button
-              onClick={() => setShowMobileFilters(!showMobileFilters)}
-              className="lg:hidden w-full py-2 px-4 bg-gray-100 rounded-md mb-4"
-            >
-              {showMobileFilters ? 'Hide Filters' : 'Show Filters'}
-            </button>
-
-            <div className={`${showMobileFilters ? 'block' : 'hidden'} lg:block space-y-6`}>
+            <div className="space-y-4 sm:space-y-6">
               {/* Category Filter */}
               <div>
-                <h3 className="filter-label">Category</h3>
+                <h3 className="text-xs sm:text-sm font-semibold mb-2 text-gray-700">Category</h3>
                 <select
                   value={filters.category}
                   onChange={(e) => handleFilterChange('category', e.target.value)}
-                  className="filter-select"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                 >
                   <option value="">All Categories</option>
                   {categories.map((category) => (
@@ -230,11 +236,11 @@ function ProductsPageContent() {
 
               {/* Brand Filter */}
               <div>
-                <h3 className="filter-label">Brand</h3>
+                <h3 className="text-xs sm:text-sm font-semibold mb-2 text-gray-700">Brand</h3>
                 <select
                   value={filters.brand}
                   onChange={(e) => handleFilterChange('brand', e.target.value)}
-                  className="filter-select"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                 >
                   <option value="">All Brands</option>
                   {brands.map((brand) => (
@@ -247,33 +253,33 @@ function ProductsPageContent() {
 
               {/* Price Range */}
               <div>
-                <h3 className="filter-label">Price Range</h3>
+                <h3 className="text-xs sm:text-sm font-semibold mb-2 text-gray-700">Price Range</h3>
                 <div className="flex gap-2 items-center">
                   <input
                     type="number"
                     placeholder="Min"
                     value={filters.minPrice}
                     onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                    className="filter-input"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                   />
-                  <span>-</span>
+                  <span className="text-gray-500">-</span>
                   <input
                     type="number"
                     placeholder="Max"
                     value={filters.maxPrice}
                     onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                    className="filter-input"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                   />
                 </div>
               </div>
 
               {/* Rating Filter */}
               <div>
-                <h3 className="filter-label">Minimum Rating</h3>
+                <h3 className="text-xs sm:text-sm font-semibold mb-2 text-gray-700">Minimum Rating</h3>
                 <select
                   value={filters.minRating}
                   onChange={(e) => handleFilterChange('minRating', e.target.value)}
-                  className="filter-select"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                 >
                   <option value="">All Ratings</option>
                   <option value="4">4★ & above</option>
@@ -285,11 +291,11 @@ function ProductsPageContent() {
 
               {/* Gender Filter */}
               <div>
-                <h3 className="filter-label">Gender</h3>
+                <h3 className="text-xs sm:text-sm font-semibold mb-2 text-gray-700">Gender</h3>
                 <select
                   value={filters.gender}
                   onChange={(e) => handleFilterChange('gender', e.target.value)}
-                  className="filter-select"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                 >
                   <option value="">All</option>
                   <option value="men">Men</option>
@@ -302,57 +308,19 @@ function ProductsPageContent() {
         </div>
 
         {/* Products Grid */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           {/* Sort and Results Info */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-            <p className="text-gray-600">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
+            <p className="text-gray-600 text-sm sm:text-base">
               Showing {products.length} of {totalProducts} products
             </p>
-            {searchParams.toString() && (
-              <button
-                onClick={() => {
-                  const params = new URLSearchParams(searchParams);
 
-                  params.delete('search');
-
-                  router.replace(
-                    `${pathname}${params.toString() ? `?${params.toString()}` : ''
-                    }`
-                  );
-
-                  setSearchInput('');
-
-                  setFilters((prev) => ({
-                    ...prev,
-                    search: '',
-                  }));
-                }}
-                className="
-    inline-flex items-center gap-2
-    px-5 py-2.5
-    bg-white
-    border border-gray-300
-    rounded-xl
-    text-sm font-medium
-    text-gray-700
-    shadow-sm
-    hover:bg-black
-    hover:text-white
-    hover:border-black
-    transition-all duration-300
-    hover:shadow-md
-    active:scale-95
-  "
-              >
-                ✕ Reset Filters
-              </button>
-            )}
-            <div className="flex items-center gap-4">
-              <label className="text-sm font-medium">Sort by:</label>
+            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
+              <label className="text-xs sm:text-sm font-medium whitespace-nowrap">Sort by:</label>
               <select
                 value={filters.sortBy}
                 onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                className="p-2 border rounded-md"
+                className="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black w-full sm:w-auto"
               >
                 <option value="latest">Latest</option>
                 <option value="popularity">Popularity</option>
@@ -363,34 +331,57 @@ function ProductsPageContent() {
             </div>
           </div>
 
+          {searchParams.toString() && (
+            <div className="mb-4">
+              <button
+                onClick={() => {
+                  const params = new URLSearchParams(searchParams);
+                  params.delete('search');
+                  router.replace(
+                    `${pathname}${params.toString() ? `?${params.toString()}` : ''
+                    }`
+                  );
+                  setSearchInput('');
+                  setFilters((prev) => ({
+                    ...prev,
+                    search: '',
+                  }));
+                }}
+                className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-white border border-gray-300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 shadow-sm hover:bg-black hover:text-white hover:border-black transition-all active:scale-95"
+              >
+                ✕ Reset Search
+              </button>
+            </div>
+          )}
+
           {/* Products */}
           {error ? (
-            <div className="text-center py-12">
-              <p className="text-red-600 text-lg mb-2">{error}</p>
+            <div className="text-center py-8 sm:py-12">
+              <p className="text-red-600 text-base sm:text-lg mb-2">{error}</p>
               <button
                 onClick={() => setRetryCount((c) => c + 1)}
-                className="mt-4 px-6 py-2 bg-black text-white rounded-md hover:bg-gray-800"
+                className="mt-4 px-4 py-2 sm:px-6 sm:py-2.5 bg-black text-white rounded-md hover:bg-gray-800 text-sm sm:text-base"
               >
                 Retry
               </button>
             </div>
           ) : loading ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+            <div className="text-center py-8 sm:py-12">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 border-b-2 border-black"></div>
             </div>
           ) : products.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">No products found</p>
+            <div className="text-center py-8 sm:py-12">
+              <p className="text-gray-600 text-base sm:text-lg">No products found</p>
               <button
                 onClick={clearFilters}
-                className="mt-4 px-6 py-2 bg-black text-white rounded-md hover:bg-gray-800"
+                className="mt-4 px-4 py-2 sm:px-6 sm:py-2.5 bg-black text-white rounded-md hover:bg-gray-800 text-sm sm:text-base"
               >
                 Clear Filters
               </button>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
                       {products.map((product) => (
                         <ProductCard
                           key={product._id}
@@ -403,21 +394,21 @@ function ProductsPageContent() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex justify-center mt-8 gap-2">
+                <div className="flex justify-center items-center gap-2 mt-6 sm:mt-8">
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base hover:border-black transition-colors min-w-[80px] sm:min-w-[100px]"
                   >
                     Previous
                   </button>
-                  <span className="px-4 py-2">
+                  <span className="px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base">
                     Page {page} of {totalPages}
                   </span>
                   <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base hover:border-black transition-colors min-w-[80px] sm:min-w-[100px]"
                   >
                     Next
                   </button>
@@ -431,9 +422,7 @@ function ProductsPageContent() {
   );
 }
 
-function ProductCard({ product, isAuthenticated, setCartCount }) {  
-  const [isHovered, setIsHovered] = useState(false);
-
+function ProductCard({ product, isAuthenticated, setCartCount }) {
   const [addingToCart, setAddingToCart] = useState(false);
 
   const handleAddToCart = async () => {
@@ -465,12 +454,8 @@ function ProductCard({ product, isAuthenticated, setCartCount }) {
   }
 };
   return (
-    <div  
-      className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="relative h-64 bg-white">
+    <div className="bg-white rounded-lg sm:rounded-xl shadow-sm sm:shadow-md overflow-hidden hover:shadow-lg transition-all group">
+      <div className="relative h-40 sm:h-48 lg:h-64 bg-white">
         {product.images && product.images[0] ? (
           <img
             src={product.images[0]}
@@ -478,72 +463,63 @@ function ProductCard({ product, isAuthenticated, setCartCount }) {
             className="w-full h-full object-contain"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
+          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
             No Image
           </div>
         )}
         {product.discount > 0 && (
-          <span className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold">
+          <span className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 bg-red-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-xs font-semibold">
             {product.discount}% OFF
           </span>
         )}
         {product.stock < 10 && product.stock > 0 && (
-          <span className="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded text-sm">
+          <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-orange-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-xs">
             Only {product.stock} left
           </span>
         )}
         {product.stock === 0 && (
-          <span className="absolute top-2 right-2 bg-gray-500 text-white px-2 py-1 rounded text-sm">
+          <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-gray-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-xs">
             Out of Stock
           </span>
         )}
       </div>
-      <div className="p-4">
+      <div className="p-2.5 sm:p-4">
         <a href={`/products/${product.slug}`} className="block">
-          <h3 className="font-semibold text-lg mb-1 line-clamp-1 hover:text-blue-600">{product.name}</h3>
-          <p className="text-gray-600 text-sm mb-2">{product.brand}</p>
+          <h3 className="font-semibold text-sm sm:text-base lg:text-lg mb-1 line-clamp-1 min-h-[20px] sm:min-h-[24px] hover:text-blue-600">{product.name}</h3>
+          <p className="text-gray-600 text-xs sm:text-sm mb-1.5 sm:mb-2">{product.brand}</p>
         </a>
-        <div className="flex items-center mb-2">
+        <div className="flex items-center mb-1.5 sm:mb-2">
           <div className="flex">
             {[...Array(5)].map((_, i) => (
               <span
                 key={i}
-                className={`text-sm ${i < Math.floor(product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}
+                className={`text-xs sm:text-sm ${i < Math.floor(product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}
               >
                 ★
               </span>
             ))}
           </div>
-          <span className="text-sm ml-2">({product.numReviews || 0})</span>
+          <span className="text-[10px] sm:text-xs ml-1.5 sm:ml-2 text-gray-500">({product.numReviews || 0})</span>
         </div>
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex items-center justify-between gap-1.5 sm:gap-2">
+          <div className="flex-1">
             {product.discount > 0 ? (
-              <>
-                <span className="text-lg font-bold">₹{product.finalPrice.toLocaleString()}</span>
-                <span className="text-sm text-gray-400 line-through ml-2">₹{product.price.toLocaleString()}</span>
-                
-              </>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                <span className="text-sm sm:text-base lg:text-lg font-bold leading-tight">₹{product.finalPrice.toLocaleString()}</span>
+                <span className="text-[10px] sm:text-sm text-gray-400 line-through">₹{product.price.toLocaleString()}</span>
+              </div>
             ) : (
-              <span className="text-lg font-bold">₹{product.finalPrice.toLocaleString()}</span>
+              <span className="text-sm sm:text-base lg:text-lg font-bold leading-tight">₹{product.finalPrice.toLocaleString()}</span>
             )}
           </div>
           <button
             onClick={handleAddToCart}
             disabled={product.stock === 0 || addingToCart}
-            className="
-      flex items-center gap-2
-      px-3 py-2
-      bg-black text-white
-      rounded-md
-      hover:bg-gray-800
-      disabled:bg-gray-400
-      disabled:cursor-not-allowed
-      transition
-    "
+            className="flex items-center justify-center gap-1 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-2 bg-black text-white rounded-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition text-xs sm:text-sm min-w-[60px] sm:min-w-auto"
           >
-            <ShoppingCart className="w-4 h-4" />
-            {addingToCart ? 'Adding...' : 'Add'}
+            <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">{addingToCart ? 'Adding...' : 'Add'}</span>
+            <span className="sm:hidden">{addingToCart ? '...' : 'Add'}</span>
           </button>
         </div>
       </div>

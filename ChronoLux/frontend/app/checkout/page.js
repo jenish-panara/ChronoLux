@@ -112,142 +112,149 @@ export default function CheckoutPage() {
   if (!cart) return null;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Checkout</h1>
 
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Shipping Information */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Shipping Address */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-4 flex items-center">
-                <MapPin className="w-5 h-5 mr-2" />
+            <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center">
+                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 Shipping Address
               </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Full Name *</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs sm:text-sm font-medium mb-1">Full Name *</label>
                   <input
                     type="text"
                     value={shippingAddress.name}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, name: e.target.value })}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                     disabled={processing}
+                    placeholder="Enter your full name"
                   />
-                  {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
+                  {errors.name && <p className="text-red-600 text-xs sm:text-sm mt-1">{errors.name}</p>}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-1">Mobile Number *</label>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs sm:text-sm font-medium mb-1">Mobile Number *</label>
                   <input
                     type="text"
                     value={shippingAddress.mobile}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, mobile: e.target.value })}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                     disabled={processing}
+                    placeholder="10-digit mobile number"
                   />
-                  {errors.mobile && <p className="text-red-600 text-sm mt-1">{errors.mobile}</p>}
+                  {errors.mobile && <p className="text-red-600 text-xs sm:text-sm mt-1">{errors.mobile}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">House No./Building Name *</label>
+                  <label className="block text-xs sm:text-sm font-medium mb-1">House No./Building Name *</label>
                   <input
                     type="text"
                     value={shippingAddress.houseNo}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, houseNo: e.target.value })}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                     disabled={processing}
+                    placeholder="House/Flat No., Building"
                   />
-                  {errors.houseNo && <p className="text-red-600 text-sm mt-1">{errors.houseNo}</p>}
+                  {errors.houseNo && <p className="text-red-600 text-xs sm:text-sm mt-1">{errors.houseNo}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Area/Street *</label>
+                  <label className="block text-xs sm:text-sm font-medium mb-1">Area/Street *</label>
                   <input
                     type="text"
                     value={shippingAddress.area}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, area: e.target.value })}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                     disabled={processing}
+                    placeholder="Area, Street, Landmark"
                   />
-                  {errors.area && <p className="text-red-600 text-sm mt-1">{errors.area}</p>}
+                  {errors.area && <p className="text-red-600 text-xs sm:text-sm mt-1">{errors.area}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">City *</label>
+                  <label className="block text-xs sm:text-sm font-medium mb-1">City *</label>
                   <input
                     type="text"
                     value={shippingAddress.city}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, city: e.target.value })}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                     disabled={processing}
+                    placeholder="City name"
                   />
-                  {errors.city && <p className="text-red-600 text-sm mt-1">{errors.city}</p>}
+                  {errors.city && <p className="text-red-600 text-xs sm:text-sm mt-1">{errors.city}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">State *</label>
+                  <label className="block text-xs sm:text-sm font-medium mb-1">State *</label>
                   <input
                     type="text"
                     value={shippingAddress.state}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, state: e.target.value })}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                     disabled={processing}
+                    placeholder="State"
                   />
-                  {errors.state && <p className="text-red-600 text-sm mt-1">{errors.state}</p>}
+                  {errors.state && <p className="text-red-600 text-xs sm:text-sm mt-1">{errors.state}</p>}
                 </div>
 
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-1">Pincode *</label>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs sm:text-sm font-medium mb-1">Pincode *</label>
                   <input
                     type="text"
                     value={shippingAddress.pincode}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, pincode: e.target.value })}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full px-3 py-2.5 sm:px-4 sm:py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                     disabled={processing}
+                    placeholder="6-digit pincode"
                   />
-                  {errors.pincode && <p className="text-red-600 text-sm mt-1">{errors.pincode}</p>}
+                  {errors.pincode && <p className="text-red-600 text-xs sm:text-sm mt-1">{errors.pincode}</p>}
                 </div>
               </div>
             </div>
 
             {/* Payment Method */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-4 flex items-center">
-                <CreditCard className="w-5 h-5 mr-2" />
+            <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center">
+                <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 Payment Method
               </h2>
 
-              <div className="space-y-3">
-                <label className="flex items-center p-4 border rounded-md cursor-pointer hover:bg-gray-50">
+              <div className="space-y-2 sm:space-y-3">
+                <label className={`flex items-center p-3 sm:p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition-colors ${paymentMethod === 'cod' ? 'border-black bg-gray-50' : 'border-gray-200'}`}>
                   <input
                     type="radio"
                     value="cod"
                     checked={paymentMethod === 'cod'}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="mr-3"
+                    className="mr-3 w-4 h-4"
                     disabled={processing}
                   />
                   <div>
-                    <p className="font-medium">Cash on Delivery</p>
-                    <p className="text-sm text-gray-600">Pay with cash at your doorstep</p>
+                    <p className="font-medium text-sm sm:text-base">Cash on Delivery</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Pay with cash at your doorstep</p>
                   </div>
                 </label>
 
-                <label className="flex items-center p-4 border rounded-md cursor-pointer hover:bg-gray-50">
+                <label className={`flex items-center p-3 sm:p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition-colors ${paymentMethod === 'razorpay' ? 'border-black bg-gray-50' : 'border-gray-200'}`}>
                   <input
                     type="radio"
                     value="razorpay"
                     checked={paymentMethod === 'razorpay'}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="mr-3"
+                    className="mr-3 w-4 h-4"
                     disabled={processing}
                   />
                   <div>
-                    <p className="font-medium">Razorpay (Online Payment)</p>
-                    <p className="text-sm text-gray-600">Pay securely using credit/debit card, UPI, or net banking</p>
+                    <p className="font-medium text-sm sm:text-base">Razorpay (Online Payment)</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Pay securely using credit/debit card, UPI, or net banking</p>
                   </div>
                 </label>
               </div>
@@ -256,14 +263,14 @@ export default function CheckoutPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-20">
-              <h2 className="text-xl font-bold mb-4">Order Summary</h2>
+            <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6 sticky top-16 sm:top-20">
+              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Order Summary</h2>
 
               {/* Cart Items */}
-              <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
+              <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4 max-h-48 sm:max-h-64 overflow-y-auto">
                 {cart.items.map((item) => (
-                  <div key={item._id} className="flex gap-3">
-                    <div className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0">
+                  <div key={item._id} className="flex gap-2 sm:gap-3">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-md flex-shrink-0">
                       {item.product.images && item.product.images[0] ? (
                         <img
                           src={item.product.images[0]}
@@ -271,40 +278,40 @@ export default function CheckoutPage() {
                           className="w-full h-full object-cover rounded-md"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 rounded-md text-xs">
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 rounded-md text-[10px]">
                           No Image
                         </div>
                       )}
                     </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm line-clamp-1">{item.product.name}</h4>
-                      <p className="text-gray-600 text-xs">Qty: {item.quantity}</p>
-                      <p className="font-semibold text-sm">₹{(item.finalPrice * item.quantity).toLocaleString()}</p>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-xs sm:text-sm line-clamp-1">{item.product.name}</h4>
+                      <p className="text-gray-600 text-[10px] sm:text-xs">Qty: {item.quantity}</p>
+                      <p className="font-semibold text-xs sm:text-sm">₹{(item.finalPrice * item.quantity).toLocaleString()}</p>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* Price Breakdown */}
-              <div className="border-t pt-4 space-y-2">
-                <div className="flex justify-between text-sm">
+              <div className="border-t pt-3 sm:pt-4 space-y-1.5 sm:space-y-2">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-gray-600">Subtotal</span>
                   <span>₹{cart.subtotal.toLocaleString()}</span>
                 </div>
 
                 {cart.discount > 0 && (
-                  <div className="flex justify-between text-sm text-green-600">
+                  <div className="flex justify-between text-xs sm:text-sm text-green-600">
                     <span>Discount</span>
                     <span>-₹{cart.discount.toLocaleString()}</span>
                   </div>
                 )}
 
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-gray-600">Shipping</span>
                   <span className="text-green-600">FREE</span>
                 </div>
 
-                <div className="flex justify-between font-bold text-lg border-t pt-2">
+                <div className="flex justify-between font-bold text-sm sm:text-lg border-t pt-2 sm:pt-3">
                   <span>Total</span>
                   <span>₹{cart.total.toLocaleString()}</span>
                 </div>
@@ -314,22 +321,22 @@ export default function CheckoutPage() {
               <button
                 type="submit"
                 disabled={processing}
-                className="w-full mt-6 px-6 py-3 bg-black text-white rounded-md font-semibold hover:bg-gray-800 disabled:bg-gray-400 flex items-center justify-center gap-2"
+                className="w-full mt-4 sm:mt-6 px-4 py-2.5 sm:px-6 sm:py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 disabled:bg-gray-400 flex items-center justify-center gap-2 text-sm sm:text-base"
               >
                 {processing ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white"></div>
                     Processing...
                   </>
                 ) : (
                   <>
-                    <Truck className="w-5 h-5" />
+                    <Truck className="w-4 h-4 sm:w-5 sm:h-5" />
                     Place Order
                   </>
                 )}
               </button>
 
-              <p className="text-xs text-gray-600 text-center mt-4">
+              <p className="text-[10px] sm:text-xs text-gray-600 text-center mt-2 sm:mt-4">
                 By placing this order, you agree to our Terms & Conditions
               </p>
             </div>
