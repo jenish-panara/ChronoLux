@@ -7,6 +7,7 @@ class ProductService {
     const limit = parseInt(params.limit) || 12;
     const skip = (page - 1) * limit;
 
+
     // Build query
     const query = {};
 
