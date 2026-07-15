@@ -339,7 +339,7 @@ function ProductCard({ product, isAuthenticated, setCartCount }) {
 
   return (
     <div className="luxury-card group bg-white">
-      <div className="relative h-44 sm:h-52 lg:h-64 overflow-hidden">
+      <div className="relative h-44 sm:h-52 lg:h-64  overflow-hidden">
         {product.images && product.images[0] ? (
           <div className="absolute inset-4 sm:inset-8">
             <img src={product.images[0]} alt={product.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 mix-blend-multiply" />

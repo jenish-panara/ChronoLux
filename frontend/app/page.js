@@ -113,7 +113,7 @@ export default function Home() {
       <Link href={`/products/${product.slug}`} className="group">
         <div className="luxury-card">
           {/* Image */}
-          <div className="relative h-44 sm:h-52 lg:h-64 bg-[var(--clx-surface)] overflow-hidden">
+          <div className="relative h-44 sm:h-52 lg:h-64  overflow-hidden">
             {product.images && product.images[0] ? (
               <div className="absolute inset-4 sm:inset-8">
                 <img
