@@ -304,7 +304,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════ BEST SELLERS ══════════════ */}
-      <section className="py-16 sm:py-20 lg:py-24 bg-[var(--clx-cream)]">
+      <section className="py-16 sm:py-20 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-end mb-10 sm:mb-12">
             <div>
@@ -389,7 +389,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════ NEWSLETTER ══════════════ */}
-      <section className="py-16 sm:py-20 lg:py-24 bg-[var(--clx-black)] text-white relative overflow-hidden">
+      <section className="py-16 sm:py-20 lg:py-24">
         {/* Decorative elements */}
         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--clx-gold)]/30 to-transparent" />
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, var(--clx-gold) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
