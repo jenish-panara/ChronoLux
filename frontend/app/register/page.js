@@ -60,40 +60,40 @@ export default function RegisterPage() {
             <div>
               <label className="block text-xs font-semibold mb-2 text-[var(--clx-text-secondary)] tracking-wider uppercase">Full Name *</label>
               <div className="relative">
-                <User className="absolute left-3.5 top-3.5 w-4 h-4 text-[var(--clx-text-muted)]" />
-                <input type="text" name="name" value={formData.name} onChange={handleChange} className="luxury-input pl-11" placeholder="John Doe" required disabled={loading} />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--clx-text-muted)]" />
+                <input type="text" name="name" value={formData.name} onChange={handleChange} className="luxury-input" placeholder="John Doe" required disabled={loading} />
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold mb-2 text-[var(--clx-text-secondary)] tracking-wider uppercase">Email Address *</label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-[var(--clx-text-muted)]" />
-                <input type="email" name="email" value={formData.email} onChange={handleChange} className="luxury-input pl-11" placeholder="you@example.com" required disabled={loading} />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--clx-text-muted)]" />
+                <input type="email" name="email" value={formData.email} onChange={handleChange} className="luxury-input" placeholder="you@example.com" required disabled={loading} />
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold mb-2 text-[var(--clx-text-secondary)] tracking-wider uppercase">Phone Number</label>
               <div className="relative">
-                <Phone className="absolute left-3.5 top-3.5 w-4 h-4 text-[var(--clx-text-muted)]" />
-                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="luxury-input pl-11" placeholder="+91 98765 43210" disabled={loading} />
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--clx-text-muted)]" />
+                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="luxury-input" placeholder="+91 98765 43210" disabled={loading} />
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold mb-2 text-[var(--clx-text-secondary)] tracking-wider uppercase">Password *</label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-[var(--clx-text-muted)]" />
-                <input type="password" name="password" value={formData.password} onChange={handleChange} className="luxury-input pl-11" placeholder="••••••••" required disabled={loading} />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--clx-text-muted)]" />
+                <input type="password" name="password" value={formData.password} onChange={handleChange} className="luxury-input" placeholder="••••••••" required disabled={loading} />
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold mb-2 text-[var(--clx-text-secondary)] tracking-wider uppercase">Confirm Password *</label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-[var(--clx-text-muted)]" />
-                <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="luxury-input pl-11" placeholder="••••••••" required disabled={loading} />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--clx-text-muted)]" />
+                <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="luxury-input" placeholder="••••••••" required disabled={loading} />
               </div>
             </div>
 
