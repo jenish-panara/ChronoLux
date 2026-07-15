@@ -20,129 +20,95 @@ export default function Navbar() {
   const handleSearch = (e) => {
     e.preventDefault();
     searchTerm.trim() ? router.push(`/products?search=${encodeURIComponent(searchTerm.trim())}`) : router.push('/products');
-
     setSearchTerm('');
     setMobileSearchOpen(false);
   };
 
   const navLinks = [
     { href: '/', label: 'Home' },
-    { href: '/products', label: 'Products' },
+    { href: '/products', label: 'Collection' },
     { href: '/contact', label: 'Contact' },
   ];
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
+    <nav className="bg-white/95 backdrop-blur-md sticky top-0 z-50 border-b border-[var(--clx-border-light)]"
+      style={{ transition: 'all var(--transition-base)' }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-14 sm:h-16">
+        <div className="flex justify-between items-center h-16 sm:h-[72px]">
+
           {/* Logo */}
-          <Link href="/" className="flex items-center flex-shrink-0">
+          <Link href="/" className="flex items-center flex-shrink-0 group">
             <div className="w-28 h-12 sm:w-36 sm:h-16 overflow-hidden flex items-center justify-center">
               <img
                 src="/images/Logo1.png"
                 alt="ChronoLux Logo"
-                className="w-40 sm:w-44 object-cover"
+                className="w-40 sm:w-44 object-cover transition-transform duration-300 group-hover:scale-105"
               />
             </div>
           </Link>
 
-
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+          <div className="hidden md:flex items-center space-x-8 lg:space-x-10">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-black ${
-                  pathname === link.href ? 'text-black' : 'text-gray-700'
+                className={`text-[13px] font-medium tracking-[0.08em] uppercase transition-colors duration-300 relative py-1 ${
+                  pathname === link.href
+                    ? 'text-[var(--clx-gold)]'
+                    : 'text-[var(--clx-text-secondary)] hover:text-[var(--clx-text-primary)]'
                 }`}
               >
                 {link.label}
+                {pathname === link.href && (
+                  <span className="absolute -bottom-1 left-0 w-full h-[2px] bg-[var(--clx-gold)]" />
+                )}
               </Link>
             ))}
           </div>
 
           {/* Right side icons */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-2">
+
             {/* Desktop Search */}
             <form
               onSubmit={handleSearch}
-              className="
-                        hidden md:flex
-                        items-center
-                        bg-gray-50
-                        border
-                        border-gray-200
-                        rounded-full
-                        px-3
-                        py-1.5
-                        lg:px-4
-                        w-48
-                        lg:w-80
-                        transition-all
-                        duration-300
-                        focus-within:border-black
-                        focus-within:shadow-lg
-                      "
+              className="hidden md:flex items-center bg-[var(--clx-surface)] border border-[var(--clx-border-light)] rounded-full px-4 py-2 w-48 lg:w-72 transition-all duration-300 focus-within:border-[var(--clx-gold)] focus-within:shadow-[0_0_0_3px_rgba(201,169,110,0.1)]"
             >
-              <Search className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400 flex-shrink-0" />
-
+              <Search className="w-4 h-4 text-[var(--clx-text-muted)] flex-shrink-0" />
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Search timepieces..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="
-                          flex-1
-                          ml-2
-                          bg-transparent
-                          outline-none
-                          text-xs
-                          lg:text-sm
-                          placeholder:text-gray-400
-                        "
+                className="flex-1 ml-2 bg-transparent outline-none border-none focus:outline-none focus:ring-0 shadow-none text-sm text-[var(--clx-text-primary)] placeholder:text-[var(--clx-text-muted)]"
               />
-
               <button
                 type="submit"
-                className="
-                          px-2
-                          py-1
-                          lg:px-4
-                          lg:py-2
-                          rounded-full
-                          bg-black
-                          text-white
-                          text-xs
-                          lg:text-sm
-                          font-medium
-                          hover:bg-gray-800
-                          transition-all
-                          flex-shrink-0
-                        "
+                className="px-3 py-1 rounded-full bg-[var(--clx-black)] text-white text-xs font-medium tracking-wider uppercase hover:bg-[var(--clx-charcoal)] transition-all flex-shrink-0"
               >
-                <span className="hidden lg:inline">Search</span>
-                <Search className="w-4 h-4 lg:hidden" />
+                <Search className="w-3.5 h-3.5" />
               </button>
             </form>
 
             {/* Mobile Search Toggle */}
             <button
               onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-              className="md:hidden p-2 rounded-full hover:bg-gray-100 transition-colors"
+              className="md:hidden p-2.5 rounded-full hover:bg-[var(--clx-surface)] transition-colors"
               aria-label="Search"
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-[18px] h-[18px] text-[var(--clx-text-secondary)]" />
             </button>
 
             {/* Wishlist */}
             <Link
               href="/wishlist"
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors relative min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="p-2.5 rounded-full hover:bg-[var(--clx-surface)] transition-colors relative"
             >
-              <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Heart className="w-[18px] h-[18px] text-[var(--clx-text-secondary)]" />
               {wishlistCount > 0 && (
-                <span className="absolute top-1 right-1 bg-black text-white text-[10px] sm:text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
+                <span className="absolute top-0.5 right-0.5 bg-[var(--clx-gold)] text-[var(--clx-black)] text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                   {wishlistCount}
                 </span>
               )}
@@ -151,43 +117,43 @@ export default function Navbar() {
             {/* Cart */}
             <Link
               href="/cart"
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors relative min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="p-2.5 rounded-full hover:bg-[var(--clx-surface)] transition-colors relative"
             >
-              <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
+              <ShoppingCart className="w-[18px] h-[18px] text-[var(--clx-text-secondary)]" />
               {cartCount > 0 && (
-                <span className="absolute top-1 right-1 bg-black text-white text-[10px] sm:text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
+                <span className="absolute top-0.5 right-0.5 bg-[var(--clx-gold)] text-[var(--clx-black)] text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
             </Link>
 
-            {/* User */}
+            {/* User / Login */}
             {isAuthenticated ? (
               <Link
                 href="/account"
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                className="p-2.5 rounded-full hover:bg-[var(--clx-surface)] transition-colors"
               >
-                <User className="w-4 h-4 sm:w-5 sm:h-5" />
+                <User className="w-[18px] h-[18px] text-[var(--clx-text-secondary)]" />
               </Link>
             ) : (
               <Link
                 href="/login"
-                className="hidden sm:inline-flex px-3 py-2 lg:px-4 lg:py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors text-xs sm:text-sm font-medium"
+                className="hidden sm:inline-flex px-5 py-2 bg-[var(--clx-black)] text-white rounded text-xs font-medium tracking-[0.1em] uppercase hover:bg-[var(--clx-charcoal)] transition-all duration-300"
               >
-                Login
+                Sign In
               </Link>
             )}
 
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-full hover:bg-gray-100 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="md:hidden p-2.5 rounded-full hover:bg-[var(--clx-surface)] transition-colors"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-[var(--clx-text-primary)]" />
               ) : (
-                <Menu className="w-5 h-5" />
+                <Menu className="w-5 h-5 text-[var(--clx-text-primary)]" />
               )}
             </button>
           </div>
@@ -195,10 +161,10 @@ export default function Navbar() {
 
         {/* Mobile Search Bar */}
         {mobileSearchOpen && (
-          <div className="md:hidden border-t py-3 px-4">
+          <div className="md:hidden border-t border-[var(--clx-border-light)] py-3 px-1 animate-fade-in">
             <form onSubmit={handleSearch} className="flex items-center gap-2">
-              <div className="flex-1 flex items-center bg-gray-50 border border-gray-200 rounded-full px-3 py-2">
-                <Search className="w-5 h-5 text-gray-400" />
+              <div className="flex-1 flex items-center bg-[var(--clx-surface)] border border-[var(--clx-border)] rounded-full px-4 py-2.5">
+                <Search className="w-4 h-4 text-[var(--clx-text-muted)]" />
                 <input
                   type="text"
                   placeholder="Search luxury watches..."
@@ -210,7 +176,7 @@ export default function Navbar() {
               </div>
               <button
                 type="submit"
-                className="px-4 py-2 rounded-full bg-black text-white text-sm font-medium"
+                className="luxury-btn px-4 py-2.5 text-xs rounded-full"
               >
                 Search
               </button>
@@ -221,16 +187,16 @@ export default function Navbar() {
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t bg-white">
-          <div className="px-4 py-3 space-y-1">
+        <div className="md:hidden border-t border-[var(--clx-border-light)] bg-white animate-fade-in">
+          <div className="px-4 py-4 space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                className={`block px-4 py-3.5 rounded-lg text-sm font-medium tracking-wide uppercase transition-all duration-200 ${
                   pathname === link.href
-                    ? 'bg-gray-100 text-black'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? 'bg-[var(--clx-surface)] text-[var(--clx-gold)] border-l-2 border-[var(--clx-gold)]'
+                    : 'text-[var(--clx-text-secondary)] hover:bg-[var(--clx-surface)] hover:text-[var(--clx-text-primary)]'
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -240,10 +206,10 @@ export default function Navbar() {
             {!isAuthenticated && (
               <Link
                 href="/login"
-                className="block px-4 py-3 rounded-lg text-base font-medium bg-black text-white text-center"
+                className="block px-4 py-3.5 rounded-lg text-sm font-medium tracking-wide uppercase bg-[var(--clx-black)] text-white text-center mt-3"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Login
+                Sign In
               </Link>
             )}
           </div>

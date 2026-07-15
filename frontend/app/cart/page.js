@@ -16,10 +16,7 @@ export default function CartPage() {
   const [applyingCoupon, setApplyingCoupon] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
+    if (!isAuthenticated) { router.push('/login'); return; }
     fetchCart();
   }, [isAuthenticated]);
 
@@ -36,7 +33,6 @@ export default function CartPage() {
 
   const updateQuantity = async (itemId, newQuantity) => {
     if (newQuantity < 1) return;
-
     setUpdating(true);
     try {
       await api.put(`/cart/items/${itemId}`, { quantity: newQuantity });
@@ -51,12 +47,10 @@ export default function CartPage() {
 
   const removeItem = async (itemId) => {
     if (!confirm('Are you sure you want to remove this item?')) return;
-
     setUpdating(true);
     try {
       await api.delete(`/cart/items/${itemId}`);
       await fetchCart();
-      console.log('Item removed successfully');
     } catch (error) {
       console.error('Error removing item:', error);
       alert('Failed to remove item');
@@ -66,11 +60,7 @@ export default function CartPage() {
   };
 
   const applyCoupon = async (e) => {
-    if (!couponCode.trim()) {
-      alert('Please enter a coupon code');
-      return;
-    }
-
+    if (!couponCode.trim()) { alert('Please enter a coupon code'); return; }
     setApplyingCoupon(true);
     try {
       await api.post('/cart/coupon', { code: couponCode });
@@ -98,31 +88,24 @@ export default function CartPage() {
     }
   };
 
-  const proceedToCheckout = () => {
-    router.push('/checkout');
-  };
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+      <div className="flex items-center justify-center min-h-screen bg-[var(--clx-ivory)]">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-[var(--clx-border)] border-t-[var(--clx-gold)]" />
       </div>
     );
   }
 
   if (!cart || !cart.items || cart.items.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 bg-[var(--clx-ivory)]">
         <div className="text-center">
-          <ShoppingBag className="w-24 h-24 mx-auto text-gray-400 mb-4" />
-          <h2 className="text-2xl font-bold mb-4">Your cart is empty</h2>
-          <p className="text-gray-600 mb-8">Looks like you haven't added anything to your cart yet.</p>
-          <a
-            href="/products"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-md font-semibold hover:bg-gray-800"
-          >
-            Continue Shopping
-            <ArrowRight className="w-5 h-5" />
+          <ShoppingBag className="w-20 h-20 mx-auto text-[var(--clx-border)] mb-6" />
+          <h2 className="font-serif text-2xl sm:text-3xl font-semibold mb-3 text-[var(--clx-text-primary)]">Your Cart is Empty</h2>
+          <p className="text-[var(--clx-text-secondary)] mb-8 text-sm">Looks like you haven't added any timepieces yet.</p>
+          <a href="/products" className="luxury-btn-gold px-8 py-3">
+            Explore Collection
+            <ArrowRight className="w-4 h-4" />
           </a>
         </div>
       </div>
@@ -130,173 +113,125 @@ export default function CartPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Shopping Cart</h1>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-        {/* Cart Items */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-6">
-            {cart.items.map((item) => (
-              <div key={item._id} className="flex gap-3 sm:gap-4 py-3 sm:py-4 border-b last:border-b-0">
-                {/* Product Image */}
-                <div className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 bg-white rounded-md flex-shrink-0">
-                  {item.product.images && item.product.images[0] ? (
-                    <img
-                      src={item.product.images[0]}
-                      alt={item.product.name}
-                      className="w-full h-full object-contain rounded-md"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 rounded-md text-xs">
-                      No Image
-                    </div>
-                  )}
-                </div>
-
-                {/* Product Details */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-sm sm:text-base lg:text-lg mb-0.5 sm:mb-1 line-clamp-2">{item.product.name}</h3>
-                      <p className="text-gray-600 text-xs sm:text-sm">{item.product.brand}</p>
-                      {item.product.stock < 10 && item.product.stock > 0 && (
-                        <p className="text-orange-600 text-[10px] sm:text-xs sm:text-sm mt-1">
-                          Only {item.product.stock} items left
-                        </p>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => removeItem(item._id)}
-                      disabled={updating}
-                      className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 rounded-md flex-shrink-0"
-                    >
-                      <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between mt-3 sm:mt-4">
-                    {/* Quantity Controls */}
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      <button
-                        onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                        disabled={updating || item.quantity <= 1}
-                        className="p-1 sm:p-1.5 border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed min-w-[32px] sm:min-w-[36px] flex items-center justify-center"
-                      >
-                        <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </button>
-                      <span className="w-6 sm:w-8 text-center text-sm sm:text-base font-medium">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                        disabled={updating || item.quantity >= item.product.stock}
-                        className="p-1 sm:p-1.5 border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed min-w-[32px] sm:min-w-[36px] flex items-center justify-center"
-                      >
-                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </button>
-                    </div>
-
-                    {/* Price */}
-                    <div className="text-right">
-                      {item.discount > 0 ? (
-                        <div>
-                          <p className="font-bold text-sm sm:text-base">₹{(item.finalPrice * item.quantity).toLocaleString()}</p>
-                          <p className="text-[10px] sm:text-sm text-gray-400 line-through">
-                            ₹{(item.price * item.quantity).toLocaleString()}
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="font-bold text-sm sm:text-base">₹{(item.finalPrice * item.quantity).toLocaleString()}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+    <div className="bg-[var(--clx-ivory)] min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        <div className="mb-8">
+          <span className="section-eyebrow">Your Selection</span>
+          <h1 className="font-serif text-2xl sm:text-3xl font-semibold text-[var(--clx-text-primary)]">Shopping Cart</h1>
         </div>
 
-        {/* Order Summary */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6 sticky top-16 sm:top-20">
-            <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Order Summary</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Cart Items */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-2xl shadow-[var(--clx-shadow-sm)] border border-[var(--clx-border-light)] p-4 sm:p-6">
+              {cart.items.map((item) => (
+                <div key={item._id} className="flex gap-4 py-5 border-b border-[var(--clx-border-light)] last:border-b-0">
+                  {/* Product Image */}
+                  <div className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 bg-[var(--clx-surface)] rounded-xl flex-shrink-0 overflow-hidden">
+                    {item.product.images && item.product.images[0] ? (
+                      <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-contain p-2 mix-blend-multiply" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[var(--clx-text-muted)] text-xs">No Image</div>
+                    )}
+                  </div>
 
-            <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
-              <div className="flex justify-between text-sm sm:text-base">
-                <span className="text-gray-600">Subtotal</span>
-                <span>₹{cart.subtotal.toLocaleString()}</span>
-              </div>
+                  {/* Product Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-medium tracking-[0.15em] uppercase text-[var(--clx-gold)] mb-0.5">{item.product.brand}</p>
+                        <h3 className="font-serif font-semibold text-sm sm:text-base mb-1 line-clamp-2 text-[var(--clx-text-primary)]">{item.product.name}</h3>
+                        {item.product.stock < 10 && item.product.stock > 0 && (
+                          <p className="text-amber-600 text-[10px] sm:text-xs mt-1">Only {item.product.stock} left</p>
+                        )}
+                      </div>
+                      <button onClick={() => removeItem(item._id)} disabled={updating} className="p-2 text-[var(--clx-text-muted)] hover:text-red-500 transition-colors flex-shrink-0">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
 
-              {cart.discount > 0 && (
-                <div className="flex justify-between text-green-600 text-sm sm:text-base">
-                  <span>Discount</span>
-                  <span>-₹{cart.discount.toLocaleString()}</span>
+                    <div className="flex items-center justify-between mt-4">
+                      {/* Quantity Controls */}
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => updateQuantity(item._id, item.quantity - 1)} disabled={updating || item.quantity <= 1} className="w-8 h-8 flex items-center justify-center border border-[var(--clx-border)] rounded-lg hover:border-[var(--clx-gold)] disabled:opacity-40 transition-colors">
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item._id, item.quantity + 1)} disabled={updating || item.quantity >= item.product.stock} className="w-8 h-8 flex items-center justify-center border border-[var(--clx-border)] rounded-lg hover:border-[var(--clx-gold)] disabled:opacity-40 transition-colors">
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+
+                      {/* Price */}
+                      <div className="text-right">
+                        {item.discount > 0 ? (
+                          <div>
+                            <p className="font-bold text-sm sm:text-base text-[var(--clx-text-primary)]">₹{(item.finalPrice * item.quantity).toLocaleString()}</p>
+                            <p className="text-xs text-[var(--clx-text-muted)] line-through">₹{(item.price * item.quantity).toLocaleString()}</p>
+                          </div>
+                        ) : (
+                          <p className="font-bold text-sm sm:text-base text-[var(--clx-text-primary)]">₹{(item.finalPrice * item.quantity).toLocaleString()}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              )}
-
-              <div className="flex justify-between text-sm sm:text-base">
-                <span className="text-gray-600">Shipping</span>
-                <span className="text-green-600">FREE</span>
-              </div>
-
-              <div className="border-t pt-2 sm:pt-3">
-                <div className="flex justify-between font-bold text-base sm:text-lg">
-                  <span>Total</span>
-                  <span>₹{cart.total.toLocaleString()}</span>
-                </div>
-              </div>
+              ))}
             </div>
+          </div>
 
-            {/* Coupon Code */}
-            <div className="mb-4 sm:mb-6">
-              <label className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2">Coupon Code</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={cart.coupon?.code || couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder="Enter coupon code"
-                  className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:border-black"
-                  disabled={cart.coupon}
-                />
-                {!cart.coupon ? (
-                  <button
-                    onClick={applyCoupon}
-                    disabled={applyingCoupon}
-                    className="px-3 py-2 sm:px-4 sm:py-2 bg-black text-white rounded-md hover:bg-gray-800 disabled:bg-gray-400 text-xs sm:text-sm whitespace-nowrap"
-                  >
-                    {applyingCoupon ? '...' : 'Apply'}
-                  </button>
-                ) : (
-                  <button
-                    onClick={removeCoupon}
-                    disabled={updating}
-                    className="px-3 py-2 sm:px-4 sm:py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-xs sm:text-sm whitespace-nowrap"
-                  >
-                    Remove
-                  </button>
+          {/* Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl shadow-[var(--clx-shadow-sm)] border border-[var(--clx-border-light)] p-5 sm:p-6 sticky top-24">
+              <h2 className="font-serif text-lg sm:text-xl font-semibold mb-5 text-[var(--clx-text-primary)]">Order Summary</h2>
+
+              <div className="space-y-3 mb-6">
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--clx-text-secondary)]">Subtotal</span>
+                  <span className="font-medium">₹{cart.subtotal.toLocaleString()}</span>
+                </div>
+                {cart.discount > 0 && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Discount</span>
+                    <span>-₹{cart.discount.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--clx-text-secondary)]">Shipping</span>
+                  <span className="text-green-600 font-medium">FREE</span>
+                </div>
+                <div className="border-t border-[var(--clx-border-light)] pt-3">
+                  <div className="flex justify-between font-bold text-lg">
+                    <span className="text-[var(--clx-text-primary)]">Total</span>
+                    <span className="text-[var(--clx-text-primary)]">₹{cart.total.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Coupon Code */}
+              <div className="mb-6">
+                <label className="block text-xs font-semibold mb-2 text-[var(--clx-text-secondary)] tracking-wider uppercase">Coupon Code</label>
+                <div className="flex gap-2">
+                  <input type="text" value={cart.coupon?.code || couponCode} onChange={(e) => setCouponCode(e.target.value)} placeholder="Enter code" className="luxury-input text-sm py-2.5" disabled={cart.coupon} />
+                  {!cart.coupon ? (
+                    <button onClick={applyCoupon} disabled={applyingCoupon} className="luxury-btn px-4 py-2.5 text-xs whitespace-nowrap">{applyingCoupon ? '...' : 'Apply'}</button>
+                  ) : (
+                    <button onClick={removeCoupon} disabled={updating} className="px-4 py-2.5 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 transition-colors whitespace-nowrap">Remove</button>
+                  )}
+                </div>
+                {cart.coupon && (
+                  <p className="text-xs text-green-600 mt-2">Coupon applied: {cart.coupon.code}</p>
                 )}
               </div>
-              {cart.coupon && (
-                <p className="text-xs sm:text-sm text-green-600 mt-2">
-                  Coupon applied: {cart.coupon.code}
-                </p>
-              )}
+
+              <button onClick={() => router.push('/checkout')} className="luxury-btn-gold w-full py-3.5 text-sm">
+                Proceed to Checkout
+              </button>
+
+              <a href="/products" className="block text-center text-[var(--clx-gold)] hover:text-[var(--clx-gold-dark)] text-xs mt-4 tracking-wider uppercase transition-colors">
+                Continue Shopping
+              </a>
             </div>
-
-            {/* Checkout Button */}
-            <button
-              onClick={proceedToCheckout}
-              className="w-full px-4 py-2.5 sm:px-6 sm:py-3 bg-black text-white rounded-md font-semibold hover:bg-gray-800 mb-3 sm:mb-4 text-sm sm:text-base"
-            >
-              Proceed to Checkout
-            </button>
-
-            <a
-              href="/products"
-              className="block text-center text-blue-600 hover:text-blue-800 text-xs sm:text-sm"
-            >
-              Continue Shopping
-            </a>
           </div>
         </div>
       </div>

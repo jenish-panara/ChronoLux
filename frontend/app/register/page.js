@@ -10,13 +10,7 @@ import { User, Lock, Mail, Phone, ArrowRight } from 'lucide-react';
 export default function RegisterPage() {
   const router = useRouter();
   const { setAuth } = useAuthStore();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -27,38 +21,14 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validation
-    if (!formData.name || !formData.email || !formData.password) {
-      setError('Please fill in all required fields');
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
+    if (!formData.name || !formData.email || !formData.password) { setError('Please fill in all required fields'); return; }
+    if (formData.password.length < 6) { setError('Password must be at least 6 characters long'); return; }
+    if (formData.password !== formData.confirmPassword) { setError('Passwords do not match'); return; }
     setLoading(true);
     setError('');
-
     try {
-      const response = await api.post('/auth/register', {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        phone: formData.phone,
-      });
-
-      // Store auth data
+      const response = await api.post('/auth/register', { name: formData.name, email: formData.email, password: formData.password, phone: formData.phone });
       setAuth(response.data.user, response.data.token);
-
-      // Redirect to home page
       router.push('/');
     } catch (error) {
       console.error('Registration error:', error);
@@ -69,135 +39,80 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--clx-ivory)] px-4 py-12">
       <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-bold text-black">
-            ChronoLux
+        {/* Brand Header */}
+        <div className="text-center mb-10">
+          <Link href="/" className="font-serif text-3xl sm:text-4xl font-semibold text-[var(--clx-text-primary)] tracking-tight">
+            Chrono<span className="text-[var(--clx-gold)]">Lux</span>
           </Link>
-          <p className="text-gray-600 mt-2">Create your account</p>
+          <p className="text-[var(--clx-text-secondary)] mt-3 text-sm">Create your account to get started.</p>
+          <div className="gold-accent-center mt-4" />
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Form Card */}
+        <div className="bg-white rounded-2xl shadow-[var(--clx-shadow-md)] p-8 sm:p-10 border border-[var(--clx-border-light)]">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
-                {error}
-              </div>
+              <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-lg text-sm">{error}</div>
             )}
 
             <div>
-              <label className="block text-sm font-medium mb-2">Full Name *</label>
+              <label className="block text-xs font-semibold mb-2 text-[var(--clx-text-secondary)] tracking-wider uppercase">Full Name *</label>
               <div className="relative">
-                <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-black focus:border-transparent"
-                  placeholder="John Doe"
-                  required
-                  disabled={loading}
-                />
+                <User className="absolute left-3.5 top-3.5 w-4 h-4 text-[var(--clx-text-muted)]" />
+                <input type="text" name="name" value={formData.name} onChange={handleChange} className="luxury-input pl-11" placeholder="John Doe" required disabled={loading} />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Email Address *</label>
+              <label className="block text-xs font-semibold mb-2 text-[var(--clx-text-secondary)] tracking-wider uppercase">Email Address *</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-black focus:border-transparent"
-                  placeholder="you@example.com"
-                  required
-                  disabled={loading}
-                />
+                <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-[var(--clx-text-muted)]" />
+                <input type="email" name="email" value={formData.email} onChange={handleChange} className="luxury-input pl-11" placeholder="you@example.com" required disabled={loading} />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Phone Number</label>
+              <label className="block text-xs font-semibold mb-2 text-[var(--clx-text-secondary)] tracking-wider uppercase">Phone Number</label>
               <div className="relative">
-                <Phone className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-black focus:border-transparent"
-                  placeholder="+91 98765 43210"
-                  disabled={loading}
-                />
+                <Phone className="absolute left-3.5 top-3.5 w-4 h-4 text-[var(--clx-text-muted)]" />
+                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="luxury-input pl-11" placeholder="+91 98765 43210" disabled={loading} />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Password *</label>
+              <label className="block text-xs font-semibold mb-2 text-[var(--clx-text-secondary)] tracking-wider uppercase">Password *</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-black focus:border-transparent"
-                  placeholder="••••••••"
-                  required
-                  disabled={loading}
-                />
+                <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-[var(--clx-text-muted)]" />
+                <input type="password" name="password" value={formData.password} onChange={handleChange} className="luxury-input pl-11" placeholder="••••••••" required disabled={loading} />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Confirm Password *</label>
+              <label className="block text-xs font-semibold mb-2 text-[var(--clx-text-secondary)] tracking-wider uppercase">Confirm Password *</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-black focus:border-transparent"
-                  placeholder="••••••••"
-                  required
-                  disabled={loading}
-                />
+                <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-[var(--clx-text-muted)]" />
+                <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="luxury-input pl-11" placeholder="••••••••" required disabled={loading} />
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center px-4 py-3 bg-black text-white rounded-md font-semibold hover:bg-gray-800 disabled:bg-gray-400"
-            >
+            <button type="submit" disabled={loading} className="luxury-btn w-full py-3.5 text-sm">
               {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Creating Account...
-                </>
+                <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white" /> Creating Account...</>
               ) : (
-                <>
-                  Create Account
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </>
+                <>Create Account <ArrowRight className="w-4 h-4" /></>
               )}
             </button>
 
-            <p className="text-center text-sm text-gray-600">
+            <p className="text-center text-sm text-[var(--clx-text-secondary)]">
               Already have an account?{' '}
-              <Link href="/login" className="text-blue-600 hover:text-blue-800 font-medium">
-                Sign in
-              </Link>
+              <Link href="/login" className="text-[var(--clx-gold)] hover:text-[var(--clx-gold-dark)] font-medium transition-colors">Sign in</Link>
             </p>
           </form>
         </div>
 
-        <p className="text-center text-xs text-gray-500 mt-4">
+        <p className="text-center text-xs text-[var(--clx-text-muted)] mt-6">
           By creating an account, you agree to our Terms & Conditions and Privacy Policy
         </p>
       </div>
