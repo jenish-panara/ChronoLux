@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { productsAPI, cartAPI, wishlistAPI, reviewsAPI } from '@/lib/api';
 import api from '@/lib/api';
-import { useAuthStore, useCartStore, useWishlistStore } from '@/lib/store';
+import { useAuthStore, useCartStore, useWishlistStore, useToastStore } from '@/lib/store';
 import { Star, Plus, Minus, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw } from 'lucide-react';
 
 export default function ProductDetailPage() {
@@ -13,6 +13,7 @@ export default function ProductDetailPage() {
   const { isAuthenticated } = useAuthStore();
   const { setCartCount } = useCartStore();
   const { setWishlistCount } = useWishlistStore();
+  const { showToast } = useToastStore();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -44,14 +45,14 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) { window.location.href = '/login'; return; }
-    if (product.stock < quantity) { alert('Insufficient stock'); return; }
+    if (product.stock < quantity) { showToast('Insufficient stock', 'error'); return; }
     setAddingToCart(true);
     try {
       await api.post('/cart/items', { productId: product._id, quantity });
       const cartResponse = await cartAPI.getCart();
       setCartCount(cartResponse.data.items?.length || 0);
-      alert('Added to cart successfully!');
-    } catch (error) { console.error('Error adding to cart:', error); alert('Failed to add to cart'); } finally { setAddingToCart(false); }
+      showToast('Added to cart');
+    } catch (error) { console.error('Error adding to cart:', error); showToast('Failed to add to cart', 'error'); } finally { setAddingToCart(false); }
   };
 
   const handleAddToWishlist = async () => {
@@ -61,8 +62,8 @@ export default function ProductDetailPage() {
       await wishlistAPI.addToWishlist({ productId: product._id });
       const wishlistResponse = await wishlistAPI.getWishlist();
       setWishlistCount(wishlistResponse.data.products?.length || 0);
-      alert('Added to wishlist!');
-    } catch (error) { console.error('Error adding to wishlist:', error); alert('Failed to add to wishlist'); } finally { setAddingToWishlist(false); }
+      showToast('Added to wishlist');
+    } catch (error) { console.error('Error adding to wishlist:', error); showToast('Failed to add to wishlist', 'error'); } finally { setAddingToWishlist(false); }
   };
 
   if (loading) {

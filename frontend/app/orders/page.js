@@ -31,7 +31,7 @@ export default function OrdersPage() {
     const reason = prompt('Please provide a reason for cancellation:');
     if (!reason) return;
     try {
-      await api.post(`/orders/${orderId}/cancel`, { reason });
+      await api.put(`/orders/${orderId}/cancel`, { reason });
       await fetchOrders();
       alert('Order cancelled successfully');
     } catch (error) { console.error('Error cancelling order:', error); alert('Failed to cancel order'); }
@@ -43,6 +43,7 @@ export default function OrdersPage() {
       confirmed: 'bg-blue-50 text-blue-700 border border-blue-200',
       packed: 'bg-purple-50 text-purple-700 border border-purple-200',
       shipped: 'bg-indigo-50 text-indigo-700 border border-indigo-200',
+      out_for_delivery: 'bg-cyan-50 text-cyan-700 border border-cyan-200',
       delivered: 'bg-green-50 text-green-700 border border-green-200',
       cancelled: 'bg-red-50 text-red-700 border border-red-200',
     };
@@ -50,12 +51,20 @@ export default function OrdersPage() {
   };
 
   const getStatusIcon = (status) => {
-    const icons = { pending: Clock, confirmed: Check, packed: Box, shipped: Truck, delivered: Package, cancelled: X };
+    const icons = { 
+      pending: Clock, 
+      confirmed: Check, 
+      packed: Box, 
+      shipped: Truck, 
+      out_for_delivery: Truck,
+      delivered: Package, 
+      cancelled: X 
+    };
     return icons[status] || Clock;
   };
 
   const OrderTimeline = ({ order }) => {
-    const statuses = ['pending', 'confirmed', 'packed', 'shipped', 'delivered'];
+    const statuses = ['pending', 'confirmed', 'packed', 'shipped', 'out_for_delivery', 'delivered'];
     const currentIndex = statuses.indexOf(order.orderStatus);
     return (
       <div className="relative">
@@ -64,13 +73,14 @@ export default function OrdersPage() {
             const StatusIcon = getStatusIcon(status);
             const isCompleted = index <= currentIndex;
             const isCurrent = index === currentIndex;
+            const displayLabel = status === 'out_for_delivery' ? 'Out for Delivery' : status.charAt(0).toUpperCase() + status.slice(1);
             return (
               <div key={status} className="flex flex-col items-center">
                 <div className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${isCompleted ? 'bg-[var(--clx-gold)] text-[var(--clx-black)]' : 'bg-[var(--clx-surface)] text-[var(--clx-text-muted)]'}`}>
                   <StatusIcon className="w-4 h-4" />
                 </div>
-                <span className={`text-[10px] mt-1.5 tracking-wider uppercase ${isCurrent ? 'font-semibold text-[var(--clx-gold)]' : 'text-[var(--clx-text-muted)]'}`}>
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                <span className={`text-[9px] mt-1.5 tracking-wider uppercase text-center font-medium ${isCurrent ? 'font-semibold text-[var(--clx-gold)]' : 'text-[var(--clx-text-muted)]'}`}>
+                  {displayLabel}
                 </span>
               </div>
             );

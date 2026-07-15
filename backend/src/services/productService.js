@@ -92,22 +92,26 @@ class ProductService {
 
   // Create new product
   async createProduct(data) {
+    if (data.name && !data.slug) {
+      data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
     const product = await Product.create(data);
     return product;
   }
 
   // Update product
   async updateProduct(id, data) {
-    let product = await Product.findById(id);
+    const product = await Product.findById(id);
     if (!product) {
       throw new Error('Product not found');
     }
 
-    product = await Product.findByIdAndUpdate(id, data, {
-      new: true,
-      runValidators: true,
+    // Update fields
+    Object.keys(data).forEach((key) => {
+      product[key] = data[key];
     });
 
+    await product.save();
     return product;
   }
 

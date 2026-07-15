@@ -86,7 +86,7 @@ const orderSchema = new mongoose.Schema(
     },
     orderStatus: {
       type: String,
-      enum: ['pending', 'confirmed', 'packed', 'shipped', 'delivered', 'cancelled'],
+      enum: ['pending', 'confirmed', 'packed', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'],
       default: 'pending',
     },
     paymentStatus: {
@@ -94,6 +94,13 @@ const orderSchema = new mongoose.Schema(
       enum: ['pending', 'completed', 'failed', 'refunded'],
       default: 'pending',
     },
+    statusHistory: [
+      {
+        status: { type: String, required: true },
+        updatedAt: { type: Date, default: Date.now }
+      }
+    ],
+    estimatedDeliveryDate: Date,
     deliveredAt: Date,
     cancelledAt: Date,
     cancellationReason: String,
@@ -105,6 +112,22 @@ const orderSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Initialize tracking history and estimated delivery date on create
+orderSchema.pre('save', function(next) {
+  if (this.isNew) {
+    if (!this.statusHistory || this.statusHistory.length === 0) {
+      this.statusHistory = [{ status: 'pending', updatedAt: new Date() }];
+    }
+    if (!this.estimatedDeliveryDate) {
+      // Set estimated delivery to 3 days from now
+      const estDate = new Date();
+      estDate.setDate(estDate.getDate() + 3);
+      this.estimatedDeliveryDate = estDate;
+    }
+  }
+  next();
+});
 
 // Create index for user orders
 orderSchema.index({ user: 1, createdAt: -1 });

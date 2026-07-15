@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { productsAPI, categoriesAPI, cartAPI } from '@/lib/api';
 import { ShoppingCart, Star } from 'lucide-react';
 import api from '@/lib/api';
-import { useAuthStore, useCartStore } from '@/lib/store';
+import { useAuthStore, useCartStore, useToastStore } from '@/lib/store';
 import { Filter, Search } from 'lucide-react';
 import "./product.css";
 
@@ -319,19 +319,20 @@ function ProductsPageContent() {
 
 function ProductCard({ product, isAuthenticated, setCartCount }) {
   const [addingToCart, setAddingToCart] = useState(false);
+  const { showToast } = useToastStore();
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) { window.location.href = '/login'; return; }
-    if (product.stock < 1) { alert('Out of stock'); return; }
+    if (product.stock < 1) { showToast('Out of stock', 'error'); return; }
     setAddingToCart(true);
     try {
       await api.post('/cart/items', { productId: product._id, quantity: 1 });
       const cartResponse = await cartAPI.getCart();
       setCartCount(cartResponse.data.items?.length || 0);
-      alert('Added to cart successfully!');
+      showToast('Added to cart');
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('Failed to add to cart');
+      showToast('Failed to add to cart', 'error');
     } finally {
       setAddingToCart(false);
     }

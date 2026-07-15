@@ -66,3 +66,13 @@ export const useWishlistStore = create(
     }
   )
 );
+
+export const useToastStore = create((set) => ({
+  toast: { message: '', type: 'success', visible: false },
+  showToast: (message, type = 'success') => {
+    set({ toast: { message, type, visible: true } });
+    setTimeout(() => {
+      set({ toast: { message: '', type: 'success', visible: false } });
+    }, 3000);
+  },
+}));

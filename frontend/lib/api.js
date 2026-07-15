@@ -102,4 +102,14 @@ export const reviewsAPI = {
   deleteReview: (id) => api.delete(`/reviews/${id}`),
 };
 
+// Admin API
+export const adminAPI = {
+  getStats: () => api.get('/admin/stats'),
+  getOrders: (params) => api.get('/admin/orders', { params }),
+  updateOrderStatus: (id, data) => api.put(`/admin/orders/${id}/status`, data),
+  getUsers: (params) => api.get('/admin/users', { params }),
+  getAnalytics: () => api.get('/admin/analytics'),
+  importCSV: (data) => api.post('/admin/products/import-csv', data),
+};
+
 export default api;
