@@ -151,7 +151,7 @@ function WishlistCard({ product, removeFromWishlist, isAuthenticated, setCartCou
           <img
             src={product.images[0]}
             alt={product.name}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 mix-blend-multiply"
           />
         ) : (
           <div className="h-full flex items-center justify-center text-sm text-gray-500">
