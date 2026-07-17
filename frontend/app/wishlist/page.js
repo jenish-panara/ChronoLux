@@ -10,13 +10,8 @@ export default function WishlistPage() {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, hydrated } = useAuthStore();
 const { setCartCount } = useCartStore();
-
-
-  useEffect(() => {
-    fetchWishlist();
-  }, []);
 
   const fetchWishlist = async () => {
     try {
@@ -38,6 +33,14 @@ const { setCartCount } = useCartStore();
       setLoading(false);
     }
   };
+
+  // Only fetch wishlist after auth state is hydrated
+  useEffect(() => {
+    if (hydrated) {
+      fetchWishlist();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
 
   const removeFromWishlist = async (productId) => {
     try {
