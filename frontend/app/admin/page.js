@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { adminAPI } from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { useAuthStore } from '@/lib/store';
 import {
   TrendingUp,
@@ -36,7 +36,7 @@ export default function AdminDashboardPage() {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await adminAPI.getStats();
+      const response = await apiClient.get('/admin/stats');
       if (response.data.success) {
         setStats(response.data.stats);
         setStatusSummary(response.data.statusSummary || {});

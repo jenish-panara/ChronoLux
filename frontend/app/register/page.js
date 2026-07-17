@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import api from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { useAuthStore } from '@/lib/store';
 import { User, Lock, Mail, Phone, ArrowRight } from 'lucide-react';
 
@@ -27,7 +27,7 @@ export default function RegisterPage() {
     setLoading(true);
     setError('');
     try {
-      const response = await api.post('/auth/register', { name: formData.name, email: formData.email, password: formData.password, phone: formData.phone });
+      const response = await apiClient.post('/auth/register', { name: formData.name, email: formData.email, password: formData.password, phone: formData.phone });
       setAuth(response.data.user, response.data.token);
       router.push('/');
     } catch (error) {

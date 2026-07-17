@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { adminAPI } from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { Search, Eye, Filter, ChevronLeft, ChevronRight, X, Clock, CheckCircle2, AlertTriangle, Truck } from 'lucide-react';
 
 export default function AdminOrdersPage() {
@@ -31,7 +31,7 @@ export default function AdminOrdersPage() {
         search: search.trim(),
         status: statusFilter,
       };
-      const response = await adminAPI.getOrders(params);
+      const response = await apiClient.get('/admin/orders', { params });
       if (response.data.success) {
         setOrders(response.data.orders || []);
         setTotal(response.data.total || 0);
@@ -54,7 +54,7 @@ export default function AdminOrdersPage() {
   const handleStatusChange = async (orderId, newStatus) => {
     setUpdatingStatus(true);
     try {
-      const response = await adminAPI.updateOrderStatus(orderId, { orderStatus: newStatus });
+      const response = await apiClient.put(`/admin/orders/${orderId}/status`, { orderStatus: newStatus });
       if (response.data.success) {
         // Update local state
         setOrders(prev => prev.map(o => o._id === orderId ? { ...o, orderStatus: newStatus } : o));

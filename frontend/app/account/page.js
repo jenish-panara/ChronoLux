@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, Mail, Phone, MapPin, Pencil, Save, X, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/lib/store';
-import api from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 
 function InputField({ label, name, value, icon: Icon, editable, handleChange, toggleEdit }) {
   const inputRef = useRef(null);
@@ -44,7 +44,7 @@ export default function AccountPage() {
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user) { router.push('/login'); return; }
     (async () => {
-      const userdata = await api.get('/auth/me');
+      const userdata = await apiClient.get('/auth/me');
       const data = {
         name: userdata.data?.user?.name || '', email: userdata.data?.user?.email || '',
         phone: userdata.data?.user?.phone || '', address: userdata.data?.user?.address || '',
@@ -62,7 +62,7 @@ export default function AccountPage() {
     try {
       localStorage.setItem('user', JSON.stringify(userData));
       setOriginalData(userData);
-      await api.put('/auth/update-profile', userData);
+      await apiClient.put('/auth/update-profile', userData);
       setEditable({ name: false, email: false, phone: false, address: false });
       setHasChanges(false);
       alert('Profile updated successfully!');

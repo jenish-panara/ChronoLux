@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { useAuthStore } from '@/lib/store';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
 
@@ -22,7 +22,7 @@ export default function CartPage() {
 
   const fetchCart = async () => {
     try {
-      const response = await api.get('/cart');
+      const response = await apiClient.get('/cart');
       setCart(response.data.cart);
     } catch (error) {
       console.error('Error fetching cart:', error);
@@ -35,7 +35,7 @@ export default function CartPage() {
     if (newQuantity < 1) return;
     setUpdating(true);
     try {
-      await api.put(`/cart/items/${itemId}`, { quantity: newQuantity });
+      await apiClient.put(`/cart/items/${itemId}`, { quantity: newQuantity });
       await fetchCart();
     } catch (error) {
       console.error('Error updating quantity:', error);
@@ -49,7 +49,7 @@ export default function CartPage() {
     if (!confirm('Are you sure you want to remove this item?')) return;
     setUpdating(true);
     try {
-      await api.delete(`/cart/items/${itemId}`);
+      await apiClient.delete(`/cart/items/${itemId}`);
       await fetchCart();
     } catch (error) {
       console.error('Error removing item:', error);
@@ -63,7 +63,7 @@ export default function CartPage() {
     if (!couponCode.trim()) { alert('Please enter a coupon code'); return; }
     setApplyingCoupon(true);
     try {
-      await api.post('/cart/coupon', { code: couponCode });
+      await apiClient.post('/cart/coupon', { code: couponCode });
       await fetchCart();
       setCouponCode(e.target.value);
       alert('Coupon applied successfully!');
@@ -78,7 +78,7 @@ export default function CartPage() {
   const removeCoupon = async () => {
     setUpdating(true);
     try {
-      await api.delete('/cart/coupon');
+      await apiClient.delete('/cart/coupon');
       await fetchCart();
     } catch (error) {
       console.error('Error removing coupon:', error);

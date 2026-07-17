@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ordersAPI } from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { useAuthStore } from '@/lib/store';
 import { 
   Package, 
@@ -39,7 +39,7 @@ export default function OrderDetailsPage() {
 
   const fetchOrderDetails = async () => {
     try {
-      const response = await ordersAPI.getOrder(id);
+      const response = await apiClient.getOrder(id);
       if (response.data.success) {
         setOrder(response.data.order);
       }
@@ -57,7 +57,7 @@ export default function OrderDetailsPage() {
     
     setCancelling(true);
     try {
-      const response = await ordersAPI.cancelOrder(id, { reason });
+      const response = await apiClient.cancelOrder(id, { reason });
       if (response.data.success) {
         alert('Order cancelled successfully.');
         fetchOrderDetails();

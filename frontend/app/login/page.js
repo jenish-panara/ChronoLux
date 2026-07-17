@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import api from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { useAuthStore } from '@/lib/store';
 import { Lock, Mail, ArrowRight } from 'lucide-react';
 
@@ -25,7 +25,7 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      const response = await api.post('/auth/login', formData);
+      const response = await apiClient.post('/auth/login', formData);
       setAuth(response.data.user, response.data.token);
       if (response.data.user.role === 'admin') { router.push('/admin'); } else { router.push('/'); }
     } catch (error) {

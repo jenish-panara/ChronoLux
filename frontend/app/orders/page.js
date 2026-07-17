@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import api from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { useAuthStore } from '@/lib/store';
 import { Package, Check, X, Truck, Clock, Box, IndianRupee, Calendar } from 'lucide-react';
 
@@ -22,7 +22,7 @@ export default function OrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      const response = await api.get('/orders');
+      const response = await apiClient.get('/orders');
       setOrders(response.data.orders || []);
     } catch (error) { console.error('Error fetching orders:', error); } finally { setLoading(false); }
   };
@@ -31,7 +31,7 @@ export default function OrdersPage() {
     const reason = prompt('Please provide a reason for cancellation:');
     if (!reason) return;
     try {
-      await api.put(`/orders/${orderId}/cancel`, { reason });
+      await apiClient.put(`/orders/${orderId}/cancel`, { reason });
       await fetchOrders();
       alert('Order cancelled successfully');
     } catch (error) { console.error('Error cancelling order:', error); alert('Failed to cancel order'); }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { useAuthStore } from '@/lib/store';
 import { MapPin, Phone, User, CreditCard, Truck } from 'lucide-react';
 
@@ -36,7 +36,7 @@ export default function CheckoutPage() {
 
   const fetchCart = async () => {
     try {
-      const response = await api.get('/cart');
+      const response = await apiClient.get('/cart');
       if (!response.data.cart || !response.data.cart.items || response.data.cart.items.length === 0) {
         router.push('/cart');
         return;
@@ -88,9 +88,9 @@ export default function CheckoutPage() {
         paymentMethod,
       };
 
-      const response = await api.post('/orders', orderData);
+      const response = await apiClient.post('/orders', orderData);
 
-      await api.delete('/cart');
+      await apiClient.delete('/cart');
 
       router.push(`/orders`);
     } catch (error) {
