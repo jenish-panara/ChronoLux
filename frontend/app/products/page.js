@@ -3,11 +3,9 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
-import { productsAPI, categoriesAPI, cartAPI } from '@/lib/api';
-import { ShoppingCart, Star } from 'lucide-react';
-import api from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { useAuthStore, useCartStore, useToastStore } from '@/lib/store';
-import { Filter, Search } from 'lucide-react';
+import { Filter, Search, ShoppingCart, Star } from 'lucide-react';
 import "./product.css";
 
 export default function ProductsPage() {
@@ -51,7 +49,7 @@ function ProductsPageContent() {
 
   const fetchCategories = async () => {
     try {
-      const response = await categoriesAPI.getCategories();
+      const response = await apiClient.get('/categories');
       setCategories(response.data.categories || []);
     } catch (err) {
       console.error('Error fetching categories:', err);
@@ -95,7 +93,7 @@ function ProductsPageContent() {
         Object.keys(params).forEach((key) => {
           if (params[key] === '' || params[key] == null) delete params[key];
         });
-        const response = await productsAPI.getProducts(params, { signal: controller.signal });
+        const response = await apiClient.get('/products', { params, signal: controller.signal });
         setProducts(response.data.products || []);
         setTotalPages(response.data.pages || 1);
         setTotalProducts(response.data.total || 0);
@@ -326,8 +324,8 @@ function ProductCard({ product, isAuthenticated, setCartCount }) {
     if (product.stock < 1) { showToast('Out of stock', 'error'); return; }
     setAddingToCart(true);
     try {
-      await api.post('/cart/items', { productId: product._id, quantity: 1 });
-      const cartResponse = await cartAPI.getCart();
+      await apiClient.post('/cart/items', { productId: product._id, quantity: 1 });
+      const cartResponse = await apiClient.get('/cart');
       setCartCount(cartResponse.data.items?.length || 0);
       showToast('Added to cart');
     } catch (error) {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { adminAPI } from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { TrendingUp, ShoppingCart, BarChart3, AlertTriangle, Star, CheckCircle } from 'lucide-react';
 
 export default function AdminAnalyticsPage() {
@@ -14,7 +14,7 @@ export default function AdminAnalyticsPage() {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await adminAPI.getAnalytics();
+      const response = await apiClient.get('/admin/analytics');
       if (response.data.success) {
         setData(response.data);
       }

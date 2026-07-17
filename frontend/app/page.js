@@ -2,10 +2,121 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { productsAPI, cartAPI } from '@/lib/api';
-import api from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { useAuthStore, useCartStore } from '@/lib/store';
 import { ArrowRight, Star, ShoppingCart } from 'lucide-react';
+
+function ProductCard({ product, isAuthenticated, setCartCount }) {
+  const [addingToCart, setAddingToCart] = useState(false);
+
+  const handleAddToCart = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      window.location.href = '/login';
+      return;
+    }
+
+    if (product.stock < 1) {
+      alert('Out of stock');
+      return;
+    }
+
+    setAddingToCart(true);
+
+    try {
+      await apiClient.post('/cart/items', {
+        productId: product._id,
+        quantity: 1,
+      });
+      const cartResponse = await apiClient.get('/cart');
+      setCartCount(cartResponse.data.items?.length || 0);
+      alert('Added to cart successfully!');
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('Failed to add to cart');
+    } finally {
+      setAddingToCart(false);
+    }
+  };
+
+  return (
+    <Link href={`/products/${product.slug}`} className="group">
+      <div className="luxury-card">
+        {/* Image */}
+        <div className="relative h-44 sm:h-52 lg:h-64  overflow-hidden">
+          {product.images && product.images[0] ? (
+            <div className="absolute inset-4 sm:inset-8">
+              <img
+                src={product.images[0]}
+                alt={product.name}
+                className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 mix-blend-multiply"
+              />
+            </div>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-[var(--clx-text-muted)] text-sm">
+              No Image
+            </div>
+          )}
+          {product.discount > 0 && (
+            <span className="luxury-badge-gold absolute top-3 left-3">
+              {product.discount}% OFF
+            </span>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="p-4 sm:p-5">
+          <p className="text-[10px] sm:text-xs font-medium tracking-[0.15em] uppercase text-[var(--clx-gold)] mb-1">
+            {product.brand}
+          </p>
+          <h3 className="font-serif font-semibold text-sm sm:text-base lg:text-lg text-[var(--clx-text-primary)] mb-2 line-clamp-1">
+            {product.name}
+          </h3>
+
+          <div className="flex items-center mb-3">
+            <Star className="w-3.5 h-3.5 fill-[var(--clx-gold)] text-[var(--clx-gold)]" />
+            <span className="text-xs ml-1 text-[var(--clx-text-primary)] font-medium">
+              {product.rating || 0}
+            </span>
+            <span className="text-[var(--clx-text-muted)] text-xs ml-1">
+              ({product.numReviews || 0})
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              {product.discount > 0 ? (
+                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                  <span className="text-base sm:text-lg font-bold text-[var(--clx-text-primary)]">
+                    ₹{product.finalPrice.toLocaleString()}
+                  </span>
+                  <span className="text-xs text-[var(--clx-text-muted)] line-through">
+                    ₹{product.price.toLocaleString()}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-base sm:text-lg font-bold text-[var(--clx-text-primary)]">
+                  ₹{product.finalPrice.toLocaleString()}
+                </span>
+              )}
+            </div>
+
+            <button
+              onClick={handleAddToCart}
+              disabled={addingToCart || product.stock === 0}
+              className="flex items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 bg-[var(--clx-black)] text-white rounded hover:bg-[var(--clx-charcoal)] disabled:bg-[var(--clx-text-muted)] disabled:cursor-not-allowed text-xs font-medium tracking-wider uppercase transition-all duration-300"
+            >
+              <ShoppingCart className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{addingToCart ? '...' : 'Add'}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 export default function Home() {
   const { isAuthenticated } = useAuthStore();
@@ -43,9 +154,9 @@ export default function Home() {
   const fetchHomeData = async () => {
     try {
       const [featuredRes, newArrivalsRes, bestSellersRes] = await Promise.all([
-        productsAPI.getProducts({ isFeatured: true, limit: 8 }),
-        productsAPI.getProducts({ isNewArrival: true, limit: 8 }),
-        productsAPI.getProducts({ isBestSeller: true, limit: 8 }),
+        apiClient.get('/products', { params: { isFeatured: true, limit: 8 } }),
+        apiClient.get('/products', { params: { isNewArrival: true, limit: 8 } }),
+        apiClient.get('/products', { params: { isBestSeller: true, limit: 8 } }),
       ]);
 
       setFeaturedProducts(featuredRes.data.products || []);
@@ -73,118 +184,6 @@ export default function Home() {
   const currentHero = heroSlides[currentSlide];
 
   const goToSlide = (index) => setCurrentSlide(index);
-
-  const ProductCard = ({ product, isAuthenticated, setCartCount }) => {
-    const [addingToCart, setAddingToCart] = useState(false);
-
-    const handleAddToCart = async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (!isAuthenticated) {
-        window.location.href = '/login';
-        return;
-      }
-
-      if (product.stock < 1) {
-        alert('Out of stock');
-        return;
-      }
-
-      setAddingToCart(true);
-
-      try {
-        await api.post('/cart/items', {
-          productId: product._id,
-          quantity: 1,
-        });
-        const cartResponse = await cartAPI.getCart();
-        setCartCount(cartResponse.data.items?.length || 0);
-        alert('Added to cart successfully!');
-      } catch (error) {
-        console.error('Error adding to cart:', error);
-        alert('Failed to add to cart');
-      } finally {
-        setAddingToCart(false);
-      }
-    };
-
-    return (
-      <Link href={`/products/${product.slug}`} className="group">
-        <div className="luxury-card">
-          {/* Image */}
-          <div className="relative h-44 sm:h-52 lg:h-64  overflow-hidden">
-            {product.images && product.images[0] ? (
-              <div className="absolute inset-4 sm:inset-8">
-                <img
-                  src={product.images[0]}
-                  alt={product.name}
-                  className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 mix-blend-multiply"
-                />
-              </div>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-[var(--clx-text-muted)] text-sm">
-                No Image
-              </div>
-            )}
-            {product.discount > 0 && (
-              <span className="luxury-badge-gold absolute top-3 left-3">
-                {product.discount}% OFF
-              </span>
-            )}
-          </div>
-
-          {/* Content */}
-          <div className="p-4 sm:p-5">
-            <p className="text-[10px] sm:text-xs font-medium tracking-[0.15em] uppercase text-[var(--clx-gold)] mb-1">
-              {product.brand}
-            </p>
-            <h3 className="font-serif font-semibold text-sm sm:text-base lg:text-lg text-[var(--clx-text-primary)] mb-2 line-clamp-1">
-              {product.name}
-            </h3>
-
-            <div className="flex items-center mb-3">
-              <Star className="w-3.5 h-3.5 fill-[var(--clx-gold)] text-[var(--clx-gold)]" />
-              <span className="text-xs ml-1 text-[var(--clx-text-primary)] font-medium">
-                {product.rating || 0}
-              </span>
-              <span className="text-[var(--clx-text-muted)] text-xs ml-1">
-                ({product.numReviews || 0})
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between gap-2">
-              <div>
-                {product.discount > 0 ? (
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                    <span className="text-base sm:text-lg font-bold text-[var(--clx-text-primary)]">
-                      ₹{product.finalPrice.toLocaleString()}
-                    </span>
-                    <span className="text-xs text-[var(--clx-text-muted)] line-through">
-                      ₹{product.price.toLocaleString()}
-                    </span>
-                  </div>
-                ) : (
-                  <span className="text-base sm:text-lg font-bold text-[var(--clx-text-primary)]">
-                    ₹{product.finalPrice.toLocaleString()}
-                  </span>
-                )}
-              </div>
-
-              <button
-                onClick={handleAddToCart}
-                disabled={addingToCart || product.stock === 0}
-                className="flex items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 bg-[var(--clx-black)] text-white rounded hover:bg-[var(--clx-charcoal)] disabled:bg-[var(--clx-text-muted)] disabled:cursor-not-allowed text-xs font-medium tracking-wider uppercase transition-all duration-300"
-              >
-                <ShoppingCart className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{addingToCart ? '...' : 'Add'}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </Link>
-    );
-  };
 
   return (
     <div className="bg-[var(--clx-ivory)]">

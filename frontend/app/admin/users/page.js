@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { adminAPI } from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { Search, Users, ChevronLeft, ChevronRight, Mail, Phone, Calendar } from 'lucide-react';
 
 export default function AdminUsersPage() {
@@ -24,7 +24,7 @@ export default function AdminUsersPage() {
         limit: 10,
         search: search.trim(),
       };
-      const response = await adminAPI.getUsers(params);
+      const response = await apiClient.get('/admin/users', { params });
       if (response.data.success) {
         setUsers(response.data.users || []);
         setTotal(response.data.total || 0);

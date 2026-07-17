@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { productsAPI, categoriesAPI } from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { Search, Plus, Edit2, Trash2, Filter, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 export default function AdminProductsPage() {
@@ -41,7 +41,7 @@ export default function AdminProductsPage() {
 
   const fetchCategories = async () => {
     try {
-      const response = await categoriesAPI.getCategories();
+      const response = await apiClient.get('/categories');
       setCategories(response.data.categories || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -57,7 +57,7 @@ export default function AdminProductsPage() {
         search: search.trim(),
         category: categoryFilter,
       };
-      const response = await productsAPI.getProducts(params);
+      const response = await apiClient.get('/products', { params });
       setProducts(response.data.products || []);
       setTotalPages(response.data.pages || 1);
       setTotalProducts(response.data.total || 0);
@@ -154,9 +154,9 @@ export default function AdminProductsPage() {
 
     try {
       if (editingProduct) {
-        await productsAPI.updateProduct(editingProduct._id, payload);
+        await apiClient.put(`/products/${editingProduct._id}`, payload);
       } else {
-        await productsAPI.createProduct(payload);
+        await apiClient.post('/products', payload);
       }
       setModalOpen(false);
       fetchProducts();
@@ -171,7 +171,7 @@ export default function AdminProductsPage() {
   const handleDeleteProduct = async (id) => {
     if (!window.confirm('Are you sure you want to delete this timepiece?')) return;
     try {
-      await productsAPI.deleteProduct(id);
+      await apiClient.delete(`/products/${id}`);
       fetchProducts();
     } catch (error) {
       console.error('Error deleting product:', error);

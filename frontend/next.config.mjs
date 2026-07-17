@@ -4,8 +4,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination:
-          'https://chronolux-ytwp.onrender.com/api/:path*',
+        destination: 'https://chronolux-bgia.onrender.com/api/:path*',
       },
     ];
   },

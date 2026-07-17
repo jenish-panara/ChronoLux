@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { productsAPI } from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 
 export default function TestAPIPage() {
   const [products, setProducts] = useState([]);
@@ -15,7 +15,7 @@ export default function TestAPIPage() {
   const testAPI = async () => {
     try {
       console.log('Testing API...');
-      const response = await productsAPI.getProducts();
+      const response = await apiClient.get('/products');
       console.log('API Response:', response);
       setProducts(response.data.products || []);
       setLoading(false);

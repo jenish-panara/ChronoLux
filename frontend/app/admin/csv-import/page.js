@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { adminAPI } from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { Upload, CheckCircle2, AlertCircle, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function AdminCSVImportPage() {
@@ -107,7 +107,7 @@ export default function AdminCSVImportPage() {
         setImporting(true);
 
         // Call backend CSV Import API
-        const response = await adminAPI.importCSV({ products: parsedProducts });
+        const response = await apiClient.post('/admin/products/import-csv', { products: parsedProducts });
         if (response.data.success) {
           setResults({
             total: parsedProducts.length,

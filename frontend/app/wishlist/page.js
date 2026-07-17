@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Heart, ShoppingCart, Trash2 } from 'lucide-react';
-import { wishlistAPI, cartAPI } from '@/lib/api';
-import  api  from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { useAuthStore, useCartStore, useToastStore } from '@/lib/store';
 export default function WishlistPage() {
 
@@ -30,7 +29,7 @@ const { setCartCount } = useCartStore();
         return;
       }
 
-      const response = await wishlistAPI.getWishlist(userId);
+      const response = await apiClient.getWishlist(userId);
       console.log("🚀 ~ fetchWishlist ~ response:", response.data)
 
       setWishlist(response?.data?.wishlist?.products || []);
@@ -46,7 +45,7 @@ const { setCartCount } = useCartStore();
     try {
       const userId = localStorage.getItem('userId');
 
-      await api.delete(`/wishlist/${productId}`, { data: { userId } });
+      await apiClient.delete(`/wishlist/${productId}`, { data: { userId } });
 
       setWishlist((prev) =>
         prev.filter((item) => item._id !== productId)
@@ -129,8 +128,8 @@ function WishlistCard({ product, removeFromWishlist, isAuthenticated, setCartCou
         setAddingToCart(true);
 
         try {
-            await api.post('/cart/items', { productId: product._id, quantity: 1 });
-            await api.delete(`/wishlist/${product._id}`, { data: { userId: localStorage.getItem('userId') } });
+            await apiClient.post('/cart/items', { productId: product._id, quantity: 1 });
+            await apiClient.delete(`/wishlist/${product._id}`, { data: { userId: localStorage.getItem('userId') } });
         
             const cartResponse = await cartAPI.getCart();
 
