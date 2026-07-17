@@ -113,6 +113,7 @@ const { setCartCount } = useCartStore();
 function WishlistCard({ product, removeFromWishlist, isAuthenticated, setCartCount }) {
     const [addingToCart, setAddingToCart] = useState(false);
     const { showToast } = useToastStore();
+
     const handleAddToCart = async () => {
         if (!isAuthenticated) {
             window.location.href = '/login';
@@ -144,61 +145,65 @@ function WishlistCard({ product, removeFromWishlist, isAuthenticated, setCartCou
             setAddingToCart(false);
         }
     };
-  return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow flex flex-col h-full">
-      <div className="relative w-full aspect-[4/3] bg-gray-50 overflow-hidden">
-        {product.images?.[0] ? (
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 mix-blend-multiply"
-          />
-        ) : (
-          <div className="h-full flex items-center justify-center text-sm text-gray-500">
-            No Image
-          </div>
-        )}
 
+  return (
+    <div className="luxury-card group bg-white">
+      <div className="relative h-44 sm:h-52 lg:h-64  overflow-hidden">
+        {product.images && product.images[0] ? (
+          <div className="absolute inset-4 sm:inset-8">
+            <img src={product.images[0]} alt={product.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 mix-blend-multiply" />
+          </div>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-[var(--clx-text-muted)] text-sm">No Image</div>
+        )}
+        {product.discount > 0 && (
+          <span className="luxury-badge-gold absolute top-3 left-3">{product.discount}% OFF</span>
+        )}
+        {product.stock < 10 && product.stock > 0 && (
+          <span className="luxury-badge-dark absolute top-3 right-3">Only {product.stock} left</span>
+        )}
+        {product.stock === 0 && (
+          <span className="absolute top-3 right-3 bg-[var(--clx-text-muted)] text-white px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider">Sold Out</span>
+        )}
         <button
-          onClick={() =>
-            apiClient
-              .delete(`/wishlist/${product._id}`)
-              .then(() => removeFromWishlist(product._id))
-          }
-          className="absolute top-3 right-3 bg-white p-2 rounded-full shadow"
+          onClick={() => removeFromWishlist(product._id)}
+          className="absolute top-3 right-3 bg-white p-2 rounded-full shadow hover:bg-red-50 transition-colors"
+          style={{ zIndex: 10 }}
         >
-          <Trash2 className="w-5 h-5 text-red-500" />
+          <Trash2 className="w-4 h-4 text-red-500" />
         </button>
       </div>
-
-      <div className="p-4 flex flex-1 flex-col">
+      <div className="p-4 sm:p-5">
         <Link href={`/products/${product.slug}`} className="block">
-          <h3 className="font-semibold text-lg hover:text-blue-600 line-clamp-2">
-            {product.name}
-          </h3>
+          <p className="text-[10px] sm:text-xs font-medium tracking-[0.15em] uppercase text-[var(--clx-gold)] mb-1">{product.brand}</p>
+          <h3 className="font-serif font-semibold text-sm sm:text-base lg:text-lg mb-2 line-clamp-1 text-[var(--clx-text-primary)] hover:text-[var(--clx-gold)] transition-colors">{product.name}</h3>
         </Link>
-
-        <p className="text-gray-500 text-sm mt-1">{product.brand}</p>
-
-        <div className="mt-3">
-          <span className="text-xl font-bold">
-            ₹{product.finalPrice?.toLocaleString()}
-          </span>
+        <div className="flex items-center mb-3">
+          {[...Array(5)].map((_, i) => (
+            <span key={i} className={`text-xs ${i < Math.floor(product.rating || 0) ? 'text-[var(--clx-gold)]' : 'text-[var(--clx-border)]'}`}>★</span>
+          ))}
+          <span className="text-[10px] ml-1.5 text-[var(--clx-text-muted)]">({product.numReviews || 0})</span>
         </div>
-
-        <button
-          onClick={handleAddToCart}
-          disabled={addingToCart || product.stock === 0}
-          className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white py-2 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          <ShoppingCart className="w-4 h-4" />
-
-          {addingToCart
-            ? 'Adding...'
-            : product.stock === 0
-              ? 'Out Of Stock'
-              : 'Add To Cart'}
-        </button>
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            {product.discount > 0 ? (
+              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                <span className="text-base sm:text-lg font-bold text-[var(--clx-text-primary)]">₹{product.finalPrice.toLocaleString()}</span>
+                <span className="text-xs text-[var(--clx-text-muted)] line-through">₹{product.price.toLocaleString()}</span>
+              </div>
+            ) : (
+              <span className="text-base sm:text-lg font-bold text-[var(--clx-text-primary)]">₹{product.finalPrice.toLocaleString()}</span>
+            )}
+          </div>
+          <button
+            onClick={handleAddToCart}
+            disabled={product.stock === 0 || addingToCart}
+            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-[var(--clx-black)] text-white rounded hover:bg-[var(--clx-charcoal)] disabled:bg-[var(--clx-text-muted)] disabled:cursor-not-allowed text-xs font-medium tracking-wider uppercase transition-all duration-300"
+          >
+            <ShoppingCart className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{addingToCart ? '...' : 'Add'}</span>
+          </button>
+        </div>
       </div>
     </div>
   );
