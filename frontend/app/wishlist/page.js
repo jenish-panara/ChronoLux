@@ -145,8 +145,8 @@ function WishlistCard({ product, removeFromWishlist, isAuthenticated, setCartCou
         }
     };
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
-      <div className="relative h-64 bg-white flex items-center justify-center">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow flex flex-col h-full">
+      <div className="relative w-full aspect-[4/3] bg-gray-50 overflow-hidden">
         {product.images?.[0] ? (
           <img
             src={product.images[0]}
@@ -154,29 +154,31 @@ function WishlistCard({ product, removeFromWishlist, isAuthenticated, setCartCou
             className="w-full h-full object-contain"
           />
         ) : (
-          <div className="h-full flex items-center justify-center">
+          <div className="h-full flex items-center justify-center text-sm text-gray-500">
             No Image
           </div>
         )}
 
         <button
-          onClick={() => apiClient.delete(`/wishlist/${product._id}`).then(() => removeFromWishlist(product._id))}
+          onClick={() =>
+            apiClient
+              .delete(`/wishlist/${product._id}`)
+              .then(() => removeFromWishlist(product._id))
+          }
           className="absolute top-3 right-3 bg-white p-2 rounded-full shadow"
         >
           <Trash2 className="w-5 h-5 text-red-500" />
         </button>
       </div>
 
-      <div className="p-4">
-        <Link href={`/products/${product.slug}`}>
-          <h3 className="font-semibold text-lg hover:text-blue-600">
+      <div className="p-4 flex flex-1 flex-col">
+        <Link href={`/products/${product.slug}`} className="block">
+          <h3 className="font-semibold text-lg hover:text-blue-600 line-clamp-2">
             {product.name}
           </h3>
         </Link>
 
-        <p className="text-gray-500 text-sm mt-1">
-          {product.brand}
-        </p>
+        <p className="text-gray-500 text-sm mt-1">{product.brand}</p>
 
         <div className="mt-3">
           <span className="text-xl font-bold">
@@ -184,19 +186,19 @@ function WishlistCard({ product, removeFromWishlist, isAuthenticated, setCartCou
           </span>
         </div>
 
-              <button
-                  onClick={handleAddToCart}
-                  disabled={addingToCart || product.stock === 0}
-                  className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white py-2 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                  <ShoppingCart className="w-4 h-4" />
+        <button
+          onClick={handleAddToCart}
+          disabled={addingToCart || product.stock === 0}
+          className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white py-2 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          <ShoppingCart className="w-4 h-4" />
 
-                  {addingToCart
-                      ? 'Adding...'
-                      : product.stock === 0
-                          ? 'Out Of Stock'
-                          : 'Add To Cart'}
-              </button>
+          {addingToCart
+            ? 'Adding...'
+            : product.stock === 0
+              ? 'Out Of Stock'
+              : 'Add To Cart'}
+        </button>
       </div>
     </div>
   );
