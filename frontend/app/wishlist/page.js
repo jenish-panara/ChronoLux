@@ -22,14 +22,12 @@ const { setCartCount } = useCartStore();
     try {
       setLoading(true);
 
-      const userId = localStorage.getItem('user');
-
-      if (!userId) {
+      if (!isAuthenticated) {
         setError('Please login first');
         return;
       }
 
-      const response = await apiClient.getWishlist(userId);
+      const response = await apiClient.get('/wishlist');
       console.log("🚀 ~ fetchWishlist ~ response:", response.data)
 
       setWishlist(response?.data?.wishlist?.products || []);
@@ -43,9 +41,7 @@ const { setCartCount } = useCartStore();
 
   const removeFromWishlist = async (productId) => {
     try {
-      const userId = localStorage.getItem('userId');
-
-      await apiClient.delete(`/wishlist/${productId}`, { data: { userId } });
+      await apiClient.delete(`/wishlist/${productId}`);
 
       setWishlist((prev) =>
         prev.filter((item) => item._id !== productId)
@@ -129,12 +125,12 @@ function WishlistCard({ product, removeFromWishlist, isAuthenticated, setCartCou
 
         try {
             await apiClient.post('/cart/items', { productId: product._id, quantity: 1 });
-            await apiClient.delete(`/wishlist/${product._id}`, { data: { userId: localStorage.getItem('userId') } });
-        
-            const cartResponse = await cartAPI.getCart();
+            await apiClient.delete(`/wishlist/${product._id}`);
+
+            const cartResponse = await apiClient.get('/cart');
 
             setCartCount(
-                cartResponse?.data?.items?.length || 0
+                cartResponse?.data?.cart?.items?.length || 0
             );
 
             showToast('Added to cart');
@@ -161,7 +157,7 @@ function WishlistCard({ product, removeFromWishlist, isAuthenticated, setCartCou
         )}
 
         <button
-          onClick={() => api.delete(`/wishlist/${product._id}`, { data: { userId: localStorage.getItem('userId') } }).then(() => removeFromWishlist(product._id))}
+          onClick={() => apiClient.delete(`/wishlist/${product._id}`).then(() => removeFromWishlist(product._id))}
           className="absolute top-3 right-3 bg-white p-2 rounded-full shadow"
         >
           <Trash2 className="w-5 h-5 text-red-500" />
