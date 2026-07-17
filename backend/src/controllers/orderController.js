@@ -55,11 +55,14 @@ exports.createOrder = async (req, res, next) => {
       coupon: cart.coupon,
     });
 
-    await sendOrderConfirmationEmail(
+    // Send confirmation email (non-blocking)
+    sendOrderConfirmationEmail(
       req.user.email,
       req.user.name,
       order
-    );
+    ).catch(err => {
+      console.error('Failed to send order confirmation email:', err.message);
+    });
 
     // Update product stock
     for (const item of cart.items) {
