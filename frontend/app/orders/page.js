@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import apiClient from '@/lib/apiClient';
 import { useAuthStore } from '@/lib/store';
-import { Package, Check, X, Truck, Clock, Box, IndianRupee, Calendar } from 'lucide-react';
+import { Package, Check, X, Truck, Clock, Box, IndianRupee, Calendar, Star } from 'lucide-react';
 
 export default function OrdersPage() {
   const router = useRouter();
@@ -135,22 +135,34 @@ export default function OrdersPage() {
                     </div>
 
                     <div className="space-y-2.5">
-                      {order.orderItems?.map((item) => (
-                        <div key={item.product} className="flex gap-3 p-3 bg-[var(--clx-surface)] rounded-xl">
-                          <div className="w-14 h-14 bg-white rounded-lg flex-shrink-0 overflow-hidden">
-                            {item.image ? (
-                              <img src={item.image} alt={item.name} className="w-full h-full object-contain p-1" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[var(--clx-text-muted)] text-[9px]">No Image</div>
-                            )}
+                      {order.orderItems?.map((item) => {
+                        const itemSlug = item.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+                        return (
+                          <div key={item.product} className="flex gap-3 p-3 bg-[var(--clx-surface)] rounded-xl">
+                            <div className="w-14 h-14 bg-white rounded-lg flex-shrink-0 overflow-hidden">
+                              {item.image ? (
+                                <img src={item.image} alt={item.name} className="w-full h-full object-contain p-1" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-[var(--clx-text-muted)] text-[9px]">No Image</div>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-medium text-sm text-[var(--clx-text-primary)]">{item.name}</h4>
+                              <p className="text-xs text-[var(--clx-text-muted)]">Qty: {item.quantity}</p>
+                              <p className="font-semibold text-sm">₹{(item.finalPrice * item.quantity).toLocaleString()}</p>
+                              {order.orderStatus === 'delivered' && itemSlug && (
+                                <button
+                                  onClick={() => router.push(`/products/${itemSlug}?tab=reviews`)}
+                                  className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-[var(--clx-gold)] hover:underline"
+                                >
+                                  <Star className="w-3 h-3" />
+                                  Write Review
+                                </button>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex-1">
-                            <h4 className="font-medium text-sm text-[var(--clx-text-primary)]">{item.name}</h4>
-                            <p className="text-xs text-[var(--clx-text-muted)]">Qty: {item.quantity}</p>
-                            <p className="font-semibold text-sm">₹{(item.finalPrice * item.quantity).toLocaleString()}</p>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
 
                     <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -185,11 +197,7 @@ export default function OrdersPage() {
                           Cancel Order
                         </button>
                       )}
-                      {order.orderStatus === 'delivered' && (
-                        <button onClick={() => router.push(`/orders/${order._id}/review`)} className="luxury-btn w-full py-2.5 text-xs">
-                          Write Review
-                        </button>
-                      )}
+
                       <button onClick={() => router.push(`/orders/${order._id}`)} className="luxury-btn-outline w-full py-2.5 text-xs">
                         View Details
                       </button>

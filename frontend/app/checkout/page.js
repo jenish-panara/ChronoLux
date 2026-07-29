@@ -3,12 +3,28 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import apiClient from '@/lib/apiClient';
-import { useAuthStore } from '@/lib/store';
-import { MapPin, Phone, User, CreditCard, Truck } from 'lucide-react';
+import { useAuthStore, useCartStore } from '@/lib/store';
+import { MapPin, CreditCard, Truck } from 'lucide-react';
+
+function loadRazorpayScript() {
+  return new Promise((resolve) => {
+    if (typeof window !== 'undefined' && window.Razorpay) {
+      resolve(true);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { isAuthenticated, user } = useAuthStore();
+  const { setCartCount } = useCartStore();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -43,9 +59,8 @@ export default function CheckoutPage() {
       }
       setCart(response.data.cart);
 
-      // Pre-fill user data if available
       if (user) {
-        setShippingAddress(prev => ({
+        setShippingAddress((prev) => ({
           ...prev,
           name: user.name || '',
           mobile: user.phone || '',
@@ -76,6 +91,89 @@ export default function CheckoutPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const completeCheckout = () => {
+    setCartCount(0);
+    router.push('/orders');
+  };
+
+  const markPaymentFailed = async (orderId) => {
+    if (!orderId) return;
+    try {
+      await apiClient.post('/orders/fail-payment', { orderId });
+    } catch (error) {
+      console.error('Failed to mark payment as failed:', error);
+    }
+  };
+
+  const openRazorpayCheckout = async (order, razorpayData) => {
+    const scriptLoaded = await loadRazorpayScript();
+    if (!scriptLoaded || !window.Razorpay) {
+      await markPaymentFailed(order._id);
+      throw new Error('Unable to load Razorpay. Please try again or use Cash on Delivery.');
+    }
+
+    return new Promise((resolve, reject) => {
+      let settled = false;
+
+      const options = {
+        key: razorpayData.keyId,
+        amount: razorpayData.amount,
+        currency: razorpayData.currency || 'INR',
+        name: 'ChronoLux',
+        description: 'Order Payment',
+        order_id: razorpayData.orderId,
+        prefill: {
+          name: shippingAddress.name || user?.name || '',
+          email: user?.email || '',
+          contact: shippingAddress.mobile || user?.phone || '',
+        },
+        theme: {
+          color: '#111111',
+        },
+        handler: async (response) => {
+          if (settled) return;
+          settled = true;
+          try {
+            await apiClient.post('/orders/verify-payment', {
+              orderId: order._id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+            resolve();
+          } catch (error) {
+            // Do not auto-cancel: payment may have succeeded on Razorpay's side
+            reject(
+              new Error(
+                error.response?.data?.message ||
+                  'Payment was received but verification failed. Please contact support with your payment ID.'
+              )
+            );
+          }
+        },
+        modal: {
+          ondismiss: async () => {
+            if (settled) return;
+            settled = true;
+            await markPaymentFailed(order._id);
+            reject(new Error('Payment cancelled. Your cart items are still available.'));
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', async (response) => {
+        if (settled) return;
+        settled = true;
+        await markPaymentFailed(order._id);
+        reject(
+          new Error(response.error?.description || 'Payment failed. Please try again.')
+        );
+      });
+      rzp.open();
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -90,12 +188,25 @@ export default function CheckoutPage() {
 
       const response = await apiClient.post('/orders', orderData);
 
-      await apiClient.delete('/cart');
+      if (paymentMethod === 'razorpay') {
+        const { order, razorpay: razorpayData } = response.data;
+        if (!order || !razorpayData) {
+          throw new Error('Failed to initiate online payment.');
+        }
+        await openRazorpayCheckout(order, razorpayData);
+        completeCheckout();
+        return;
+      }
 
-      router.push(`/orders`);
+      // COD — backend already clears cart
+      completeCheckout();
     } catch (error) {
       console.error('Error creating order:', error);
-      alert(error.response?.data?.message || 'Failed to place order. Please try again.');
+      alert(error.message || error.response?.data?.message || 'Failed to place order. Please try again.');
+      // Refresh cart in case stock/cart state changed after a failed Razorpay attempt
+      if (paymentMethod === 'razorpay') {
+        fetchCart();
+      }
     } finally {
       setProcessing(false);
     }
@@ -266,7 +377,6 @@ export default function CheckoutPage() {
             <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6 sticky top-16 sm:top-20">
               <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Order Summary</h2>
 
-              {/* Cart Items */}
               <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4 max-h-48 sm:max-h-64 overflow-y-auto">
                 {cart.items.map((item) => (
                   <div key={item._id} className="flex gap-2 sm:gap-3">
@@ -292,7 +402,6 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
-              {/* Price Breakdown */}
               <div className="border-t pt-3 sm:pt-4 space-y-1.5 sm:space-y-2">
                 <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-gray-600">Subtotal</span>
@@ -317,7 +426,6 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Place Order Button */}
               <button
                 type="submit"
                 disabled={processing}
@@ -326,12 +434,12 @@ export default function CheckoutPage() {
                 {processing ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white"></div>
-                    Processing...
+                    {paymentMethod === 'razorpay' ? 'Opening payment...' : 'Processing...'}
                   </>
                 ) : (
                   <>
                     <Truck className="w-4 h-4 sm:w-5 sm:h-5" />
-                    Place Order
+                    {paymentMethod === 'razorpay' ? 'Pay Now' : 'Place Order'}
                   </>
                 )}
               </button>

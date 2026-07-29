@@ -16,9 +16,14 @@ const updateOrderStatuses = async () => {
     // Transition interval (default 5 minutes = 300000ms, configurable via environment variable)
     const intervalMs = parseInt(process.env.ORDER_TRANSITION_INTERVAL_MS) || 5 * 60 * 1000;
 
-    // Find all orders that can be transitioned
+    // Find all orders that can be transitioned.
+    // Skip unpaid Razorpay orders — they must stay pending until payment is verified.
     const activeOrders = await Order.find({
-      orderStatus: { $in: ['pending', 'confirmed', 'packed', 'shipped', 'out_for_delivery'] }
+      orderStatus: { $in: ['pending', 'confirmed', 'packed', 'shipped', 'out_for_delivery'] },
+      $or: [
+        { paymentMethod: 'cod' },
+        { paymentMethod: 'razorpay', paymentStatus: 'completed' },
+      ],
     });
 
     const now = new Date();

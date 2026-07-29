@@ -45,6 +45,11 @@ app.use(cors({
       return callback(null, true);
     }
 
+    // Always allow local Next.js origins (local frontend hitting remote API)
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+      return callback(null, true);
+    }
+
     // In production, check against allowed origins list
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
@@ -54,7 +59,8 @@ app.use(cors({
     console.log('CORS rejected origin:', origin);
     console.log('Allowed origins:', allowedOrigins);
 
-    return callback(new Error('Not allowed by CORS'));
+    // Use false (not Error) so Express doesn't turn this into a 500 JSON body
+    return callback(null, false);
   },
   credentials: true,
 }));
