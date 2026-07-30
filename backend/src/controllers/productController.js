@@ -1,4 +1,5 @@
 const productService = require('../services/productService');
+const { clearCachePattern } = require('../utils/redis');
 
 // @desc    Get all products
 // @route   GET /api/products
@@ -37,6 +38,7 @@ exports.getProduct = async (req, res, next) => {
 exports.createProduct = async (req, res, next) => {
   try {
     const product = await productService.createProduct(req.body);
+    await clearCachePattern('cache:/api/products*');
     res.status(201).json({
       success: true,
       message: 'Product created successfully',
@@ -53,6 +55,7 @@ exports.createProduct = async (req, res, next) => {
 exports.updateProduct = async (req, res, next) => {
   try {
     const product = await productService.updateProduct(req.params.id, req.body);
+    await clearCachePattern('cache:/api/products*');
     res.status(200).json({
       success: true,
       message: 'Product updated successfully',
@@ -69,6 +72,7 @@ exports.updateProduct = async (req, res, next) => {
 exports.deleteProduct = async (req, res, next) => {
   try {
     await productService.deleteProduct(req.params.id);
+    await clearCachePattern('cache:/api/products*');
     res.status(200).json({
       success: true,
       message: 'Product deleted successfully',

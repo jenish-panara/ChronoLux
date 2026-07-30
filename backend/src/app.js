@@ -15,6 +15,7 @@ const wishlistRoutes = require('./routes/wishlistRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const addressRoutes = require('./routes/addressRoutes');
 
 const app = express();
 
@@ -85,6 +86,7 @@ app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/addresses', addressRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

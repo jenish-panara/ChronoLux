@@ -2,6 +2,7 @@ const Review = require('../models/Review');
 const Product = require('../models/Product');
 const Order = require('../models/Order');
 const { uploadBufferToCloudinary, deleteFromCloudinary } = require('../utils/cloudinaryUpload');
+const { clearCachePattern } = require('../utils/redis');
 
 // Helper — recalculate and persist average rating on a product
 const recalculateProductRating = async (productId) => {
@@ -126,6 +127,7 @@ exports.createReview = async (req, res, next) => {
 
     // Update product aggregate rating
     await recalculateProductRating(productId);
+    await clearCachePattern('cache:/api/products*');
 
     res.status(201).json({
       success: true,
@@ -173,6 +175,7 @@ exports.updateReview = async (req, res, next) => {
     await review.populate('user', 'name avatar');
 
     await recalculateProductRating(review.product);
+    await clearCachePattern('cache:/api/products*');
 
     res.status(200).json({ success: true, message: 'Review updated successfully', review });
   } catch (error) {
@@ -204,6 +207,7 @@ exports.deleteReview = async (req, res, next) => {
 
     await review.deleteOne();
     await recalculateProductRating(productId);
+    await clearCachePattern('cache:/api/products*');
 
     res.status(200).json({ success: true, message: 'Review deleted successfully' });
   } catch (error) {

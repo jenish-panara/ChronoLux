@@ -1,4 +1,5 @@
 const Category = require('../models/Category');
+const { clearCachePattern } = require('../utils/redis');
 
 // @desc    Get all categories
 // @route   GET /api/categories
@@ -48,6 +49,7 @@ exports.getCategory = async (req, res, next) => {
 exports.createCategory = async (req, res, next) => {
   try {
     const category = await Category.create(req.body);
+    await clearCachePattern('cache:/api/categories*');
 
     res.status(201).json({
       success: true,
@@ -77,6 +79,8 @@ exports.updateCategory = async (req, res, next) => {
       new: true,
       runValidators: true,
     });
+    
+    await clearCachePattern('cache:/api/categories*');
 
     res.status(200).json({
       success: true,
@@ -103,6 +107,7 @@ exports.deleteCategory = async (req, res, next) => {
     }
 
     await category.deleteOne();
+    await clearCachePattern('cache:/api/categories*');
 
     res.status(200).json({
       success: true,
