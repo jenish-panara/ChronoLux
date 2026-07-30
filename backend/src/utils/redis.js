@@ -1,50 +1,44 @@
 const Redis = require('ioredis');
 
-// Only connect to Redis if it is enabled and the URL is provided
+// 1. Check if Redis is enabled in the .env file
 const isRedisEnabled = process.env.REDIS_ENABLED === 'true' && process.env.REDIS_URL;
 
 let redisClient = null;
 
+// 2. Connect to Redis (if enabled)
 if (isRedisEnabled) {
   redisClient = new Redis(process.env.REDIS_URL, {
-    maxRetriesPerRequest: 1, // Do not retry infinitely if server is down
+    maxRetriesPerRequest: 1, 
     retryStrategy(times) {
-      if (times > 3) {
-        // Stop retrying after 3 attempts and fallback to MongoDB
-        return null; 
-      }
-      return Math.min(times * 50, 2000);
+      // If we can't connect after 3 tries, stop trying so the app doesn't crash
+      if (times > 3) return null; 
+      return 1000; // Wait 1 second before retrying
     }
   });
 
-  redisClient.on('error', (err) => {
-    console.error('Redis connection error:', err.message);
-  });
-
-  redisClient.on('connect', () => {
-    console.log('Redis connected successfully.');
-  });
+  redisClient.on('error', (err) => console.error('Redis connection error:', err.message));
+  redisClient.on('connect', () => console.log('Redis connected successfully.'));
 }
 
 /**
- * Utility to clear all cache keys matching a specific pattern.
- * E.g., clearCachePattern('cache:/api/products*')
- * This uses SCAN so it won't block the Redis server like KEYS would.
+ * UTILITY: Clear Cache
+ * This function deletes cached data when a product or category is updated.
+ * E.g., clearCachePattern('cache:/api/products') will delete all product cache.
  */
-const clearCachePattern = async (pattern) => {
+const clearCachePattern = async (prefixPattern) => {
+  // If Redis isn't connected, do nothing
   if (!redisClient) return;
 
   try {
-    let cursor = '0';
-    do {
-      const result = await redisClient.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
-      cursor = result[0];
-      const keys = result[1];
+    // STEP 1: Find all saved keys in Redis that match the pattern
+    // (e.g. find all keys starting with "cache:/api/products")
+    const matchingKeys = await redisClient.keys(`${prefixPattern}*`);
 
-      if (keys.length > 0) {
-        await redisClient.del(...keys);
-      }
-    } while (cursor !== '0');
+    // STEP 2: If we found any keys, delete them!
+    if (matchingKeys.length > 0) {
+      await redisClient.del(matchingKeys);
+      console.log(`🗑️ Cache Cleared: Deleted ${matchingKeys.length} items matching "${prefixPattern}"`);
+    }
   } catch (error) {
     console.error('Error clearing cache:', error);
   }
@@ -54,3 +48,4 @@ module.exports = {
   redisClient,
   clearCachePattern,
 };
+
