@@ -209,7 +209,7 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
 
             {/* Content */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6 sm:px-8 lg:px-12">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6 sm:px-8 lg:px-12 z-10">
               <span className="tracking-[0.3em] sm:tracking-[0.4em] text-[10px] sm:text-xs mb-3 sm:mb-5 text-[var(--clx-gold)] font-medium uppercase">
                 {currentHero.eyebrow}
               </span>
@@ -239,7 +239,7 @@ export default function Home() {
             </div>
 
             {/* Slide Indicators */}
-            <div className="absolute bottom-5 sm:bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5">
+            <div className="absolute bottom-5 sm:bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5 z-20">
               {heroSlides.map((_, index) => (
                 <button
                   key={index}

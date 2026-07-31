@@ -27,6 +27,7 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/products', label: 'Collection' },
+    ...(isAuthenticated ? [{ href: '/orders', label: 'Orders' }] : []),
     { href: '/contact', label: 'Contact' },
   ];
 
