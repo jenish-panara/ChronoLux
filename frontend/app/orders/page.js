@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import apiClient from '@/lib/apiClient';
+import { getPaymentBadge } from '@/lib/paymentStatus';
 import { useAuthStore } from '@/lib/store';
 import { Package, Check, X, Truck, Clock, Box, IndianRupee, Calendar, Star } from 'lucide-react';
 
@@ -129,9 +130,19 @@ export default function OrdersPage() {
                           Placed on {new Date(order.createdAt).toLocaleDateString()}
                         </p>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase ${getStatusColor(order.orderStatus)}`}>
-                        {order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)}
-                      </span>
+                      <div className="flex flex-col items-end gap-1.5">
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase ${getStatusColor(order.orderStatus)}`}>
+                          {order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)}
+                        </span>
+                        {(() => {
+                          const badge = getPaymentBadge(order);
+                          return (
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase border ${badge.className}`}>
+                              {badge.label}
+                            </span>
+                          );
+                        })()}
+                      </div>
                     </div>
 
                     <div className="space-y-2.5">

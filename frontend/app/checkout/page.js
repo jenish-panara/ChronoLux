@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import apiClient from '@/lib/apiClient';
 import { useAuthStore, useCartStore } from '@/lib/store';
 import {
-  MapPin, CreditCard, Truck, Plus, Check, Pencil, Trash2, X, Loader2,
+  MapPin, CreditCard, Truck, Plus, Check, Pencil, Trash2, X, Loader2, AlertCircle,
 } from 'lucide-react';
 
 function loadRazorpayScript() {
@@ -247,6 +247,7 @@ export default function CheckoutPage() {
   const [saveToProfile, setSaveToProfile] = useState(true);
 
   const [paymentMethod, setPaymentMethod] = useState('cod');
+  const [paymentRetryNotice, setPaymentRetryNotice] = useState('');
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -434,9 +435,9 @@ export default function CheckoutPage() {
 
   // ─── Checkout handlers ────────────────────────────────────────────────
 
-  const completeCheckout = () => {
+  const completeCheckout = (orderId) => {
     setCartCount(0);
-    router.push('/orders');
+    router.push(`/orders/${orderId}/success`);
   };
 
   const markPaymentFailed = async (orderId) => {
@@ -506,12 +507,14 @@ export default function CheckoutPage() {
       };
 
       const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', async (response) => {
-        if (settled) return;
-        settled = true;
-        await markPaymentFailed(order._id);
-        reject(
-          new Error(response.error?.description || 'Payment failed. Please try again.')
+      // A failed attempt is NOT terminal — the Razorpay modal stays open so the
+      // user can retry. Only ondismiss (gave up) or the success handler settles
+      // this promise. Cancelling the order here would break verification of a
+      // successful retry.
+      rzp.on('payment.failed', (response) => {
+        setPaymentRetryNotice(
+          response.error?.description ||
+            'Payment attempt failed. You can retry from the payment window or close it to cancel.'
         );
       });
       rzp.open();
@@ -520,6 +523,7 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setPaymentRetryNotice('');
 
     if (!validateForm()) return;
 
@@ -547,12 +551,12 @@ export default function CheckoutPage() {
           throw new Error('Failed to initiate online payment.');
         }
         await openRazorpayCheckout(order, razorpayData);
-        completeCheckout();
+        completeCheckout(order._id);
         return;
       }
 
       // COD — backend already clears cart
-      completeCheckout();
+      completeCheckout(response.data.order._id);
     } catch (error) {
       console.error('Error creating order:', error);
       alert(error.message || error.response?.data?.message || 'Failed to place order. Please try again.');
@@ -745,6 +749,13 @@ export default function CheckoutPage() {
                     <span>₹{cart.total.toLocaleString()}</span>
                   </div>
                 </div>
+
+                {paymentRetryNotice && (
+                  <div className="mt-4 flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs">{paymentRetryNotice}</p>
+                  </div>
+                )}
 
                 <button
                   type="submit"

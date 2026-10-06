@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import apiClient from '@/lib/apiClient';
+import { getPaymentBadge } from '@/lib/paymentStatus';
 import { useAuthStore } from '@/lib/store';
 import { 
   Package, 
@@ -39,7 +40,7 @@ export default function OrderDetailsPage() {
 
   const fetchOrderDetails = async () => {
     try {
-      const response = await apiClient.getOrder(id);
+      const response = await apiClient.get(`/orders/${id}`);
       if (response.data.success) {
         setOrder(response.data.order);
       }
@@ -57,7 +58,7 @@ export default function OrderDetailsPage() {
     
     setCancelling(true);
     try {
-      const response = await apiClient.cancelOrder(id, { reason });
+      const response = await apiClient.put(`/orders/${id}/cancel`, { reason });
       if (response.data.success) {
         alert('Order cancelled successfully.');
         fetchOrderDetails();
@@ -313,7 +314,18 @@ export default function OrderDetailsPage() {
                 </div>
                 <div className="mt-3.5 pt-3.5 border-t border-[var(--clx-border-light)] flex justify-between items-center text-[10px] font-semibold tracking-wider uppercase">
                   <span>Method:</span>
-                  <span className="bg-[var(--clx-surface)] px-2 py-0.5 rounded border border-[var(--clx-border-light)] text-[var(--clx-text-primary)]">{order.paymentMethod}</span>
+                  <span className="bg-[var(--clx-surface)] px-2 py-0.5 rounded border border-[var(--clx-border-light)] text-[var(--clx-text-primary)]">
+                    {order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Razorpay'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-[10px] font-semibold tracking-wider uppercase">
+                  <span>Status:</span>
+                  {(() => {
+                    const badge = getPaymentBadge(order);
+                    return (
+                      <span className={`px-2 py-0.5 rounded border ${badge.className}`}>{badge.label}</span>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
