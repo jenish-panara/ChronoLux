@@ -46,7 +46,10 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response?.status === 401) {
+    // A 401 from the login/register attempt itself just means wrong
+    // credentials - don't redirect, let the page show the error message.
+    const isAuthAttempt = /^\/auth\/(login|register)/.test(error.config?.url || '');
+    if (error.response?.status === 401 && !isAuthAttempt) {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
